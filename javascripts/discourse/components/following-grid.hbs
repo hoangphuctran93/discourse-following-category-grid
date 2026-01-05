@@ -3,9 +3,11 @@
   <div class="following-card-wrapper">
     <div class="following-card clickable-card" role="button" {{on "click" (fn this.visit item)}}>
       <!-- Bulk Select Checkbox -->
+      {{#if @bulkSelectEnabled}}
       <div class="card-bulk-select" {{on "click" this.toggleSelect}}>
         <Input @type="checkbox" @checked={{item.topic.selected}} class="bulk-select" />
       </div>
+      {{/if}}
 
       <!-- Dynamic Gradient Header -->
       <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
