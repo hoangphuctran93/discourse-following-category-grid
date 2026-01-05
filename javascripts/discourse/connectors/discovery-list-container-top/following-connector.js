@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { inject as service } from "@ember/service";
+import { getOwner } from "@ember/application";
 
 export default class FollowingConnector extends Component {
     @service router;
@@ -24,14 +25,21 @@ export default class FollowingConnector extends Component {
     }
 
     get topics() {
-        console.log("FollowingConnector outletArgs:", this.args.outletArgs);
+        // 1. Try args
         if (this.args.outletArgs?.topics) {
             return this.args.outletArgs.topics;
         }
-        // Fallback attempt: check model
-        if (this.args.outletArgs?.model?.topics) {
-            return this.args.outletArgs.model.topics;
+
+        // 2. Try controller lookup (Robust fallback for 2025 structure)
+        try {
+            const controller = getOwner(this).lookup("controller:discovery/topics");
+            if (controller && controller.model && controller.model.topics) {
+                return controller.model.topics;
+            }
+        } catch (e) {
+            console.warn("Could not lookup discovery controller", e);
         }
+
         return [];
     }
 }
