@@ -1,53 +1,58 @@
 <div class="following-grid-container">
   {{#each this.gridItems as |item|}}
-    <div class="following-card-wrapper">
-      <div class="following-card">
-        <!-- Dynamic Gradient Header -->
-        <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
-        
-        <div class="card-content">
-          <!-- Avatar -->
-          <div class="card-avatar-container">
-            <img 
-              alt={{item.username}} 
-              class="card-avatar" 
-              src={{item.avatarUrl}}
-            />
-            <div class="online-status-dot"></div>
-          </div>
+  <div class="following-card-wrapper">
+    <div class="following-card clickable-card" role="button" {{on "click" (fn this.visit item)}}>
+      <!-- Dynamic Gradient Header -->
+      <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
 
-          <!-- Name -->
-          <h2 class="card-name">
-            {{#if item.name}}
-              {{item.name}}
-            {{else}}
-              {{item.username}}
-            {{/if}}
-          </h2>
-
-          <!-- Badge/Tag -->
-          <span class="card-category-pill">
-            {{item.categoryName}}
-          </span>
-
-          <!-- Description/Excerpt -->
-          <p class="card-description">
-            {{item.title}}
-          </p>
+      <div class="card-content">
+        <!-- Thumbnail (was Avatar) -->
+        <div class="card-thumbnail-container">
+          <img alt={{item.title}} class="card-thumbnail" src={{item.thumbnailUrl}} />
         </div>
 
-        <!-- Footer / Actions -->
-        <div class="card-footer">
-          <a href={{item.url}} class="btn-follow">
-            {{d-icon "user-plus"}}
-            <span>Theo dõi</span>
-          </a>
-          <button class="btn-like" title="Likes">
-            {{d-icon "heart"}}
-            <span class="like-count">{{item.likes}}</span>
-          </button>
+        <!-- Name -->
+        <h2 class="card-name">
+          {{#if item.name}}
+          {{item.name}}
+          {{else}}
+          {{item.username}}
+          {{/if}}
+        </h2>
+
+        <!-- Badge/Tag -->
+        <span class="card-category-pill">
+          {{item.categoryName}}
+        </span>
+
+        <!-- Description/Excerpt -->
+        <p class="card-description">
+          {{item.title}}
+        </p>
+      </div>
+
+      <!-- Footer / Actions -->
+      <div class="card-footer">
+        <!-- Vote Action Button (Left) -->
+        <button class="btn-vote-action {{if item.topic.user_voted 'voted'}}" {{on "click" (fn this.toggleVote item)}}
+          title={{if item.topic.user_voted "Remove Vote" "Upvote" }}>
+          {{d-icon "arrow-up"}}
+          <span>
+            {{#if item.topic.user_voted}}
+            Đã Vote
+            {{else}}
+            Upvote
+            {{/if}}
+          </span>
+        </button>
+
+        <!-- Vote Count Display (Right) -->
+        <div class="vote-count-display" title="Total Votes">
+          {{d-icon "arrow-up"}}
+          <span class="count">{{item.topic.vote_count}}</span>
         </div>
       </div>
     </div>
+  </div>
   {{/each}}
 </div>
