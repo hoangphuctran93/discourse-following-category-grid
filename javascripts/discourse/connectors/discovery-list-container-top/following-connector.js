@@ -8,8 +8,13 @@ export default class FollowingConnector extends Component {
 
     get shouldRender() {
         const category = this.args.outletArgs?.category;
-        const settingValue = settings.following_grid_category || "following";
-        const targets = settingValue.split(",").map(t => t.trim()).filter(Boolean);
+        const settingValue = settings.following_grid_category;
+
+        if (!category || !settingValue) {
+            return false;
+        }
+
+        const targets = settingValue.split("|").map(t => t.trim()).filter(Boolean);
 
         if (category) {
             const isTarget = targets.some(target =>

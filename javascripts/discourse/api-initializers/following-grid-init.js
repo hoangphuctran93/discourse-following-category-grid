@@ -2,9 +2,12 @@ import { apiInitializer } from "discourse/lib/api";
 
 export default apiInitializer("1.0", (api) => {
     api.onPageChange((url, title) => {
-        // Check key from settings (default "following")
-        const settingValue = settings.following_grid_category || "following";
-        const targets = settingValue.split(",").map(t => t.trim()).filter(Boolean);
+        // Check key from settings (type: list uses pipe separator)
+        const settingValue = settings.following_grid_category;
+
+        if (!settingValue) return;
+
+        const targets = settingValue.split("|").map(t => t.trim()).filter(Boolean);
 
         // Check if URL contains /c/target (slug) or /c/.../target (ID)
         const isTargetPage = targets.some(target => {
