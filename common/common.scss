@@ -178,11 +178,16 @@ $transition-speed: 300ms;
   // Tags Styling
   .card-tags-list {
     display: flex;
+    justify-content: flex-start;
     gap: 0.5rem;
     overflow-x: auto;
     white-space: nowrap;
     margin-bottom: 0.5rem;
-    max-width: 100%; // Ensure it doesn't break the card layout
+
+    // Critical Constraints to force scroll within padded parent
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
 
     scrollbar-width: none;
     /* Firefox */
@@ -195,7 +200,7 @@ $transition-speed: 300ms;
     }
 
     .card-tag {
-      flex-shrink: 0; // Prevent squash
+      flex-shrink: 0;
       font-size: var(--font-down-2);
       background: var(--primary-low);
       color: var(--primary-medium);
