@@ -182,6 +182,8 @@ $transition-speed: 300ms;
     overflow-x: auto;
     white-space: nowrap;
     margin-bottom: 0.5rem;
+    max-width: 100%; // Ensure it doesn't break the card layout
+
     scrollbar-width: none;
     /* Firefox */
     -ms-overflow-style: none;
@@ -193,6 +195,7 @@ $transition-speed: 300ms;
     }
 
     .card-tag {
+      flex-shrink: 0; // Prevent squash
       font-size: var(--font-down-2);
       background: var(--primary-low);
       color: var(--primary-medium);
