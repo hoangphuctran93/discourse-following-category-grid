@@ -39,10 +39,9 @@ export default class FollowingGrid extends Component {
 
       return {
         id: topic.id,
-        title: topic.title,
+        displayName: topic.title,
+        displayDescription: topic.excerpt || "",
         categoryName: topic.category ? topic.category.name : "General",
-        username: user ? user.username : "Unknown",
-        name: user ? user.name : topic.last_poster_username,
         thumbnailUrl: thumbnailUrl,
         voteCount: topic.vote_count || 0, // Using vote_count from topic voting plugin
         userVoted: topic.user_voted || false,
