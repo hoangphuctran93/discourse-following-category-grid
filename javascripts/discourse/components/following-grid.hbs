@@ -2,6 +2,11 @@
   {{#each this.gridItems as |item|}}
   <div class="following-card-wrapper">
     <div class="following-card clickable-card" role="button" {{on "click" (fn this.visit item)}}>
+      <!-- Bulk Select Checkbox -->
+      <div class="card-bulk-select" {{on "click" this.toggleSelect}}>
+        <Input @type="checkbox" @checked={{item.topic.selected}} class="bulk-select" />
+      </div>
+
       <!-- Dynamic Gradient Header -->
       <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
 
@@ -17,9 +22,12 @@
         </h2>
 
         <!-- Badge/Tag -->
-        <span class="card-category-pill">
-          {{item.categoryName}}
-        </span>
+        <!-- Tags List -->
+        <div class="card-tags-list">
+          {{#each item.tags as |tag|}}
+          <span class="card-tag">{{tag}}</span>
+          {{/each}}
+        </div>
 
         <!-- Description/Excerpt -->
         <p class="card-description">
@@ -31,13 +39,13 @@
       <div class="card-footer">
         <!-- Vote Action Button (Left) -->
         <button class="btn-vote-action {{if item.topic.user_voted 'voted'}}" {{on "click" (fn this.toggleVote item)}}
-          title={{if item.topic.user_voted "Hủy theo dõi" "Theo dõi" }}>
+          title={{if item.topic.user_voted item.votedBtnText item.voteBtnText }}>
           {{#if item.topic.user_voted}}
           {{d-icon "check"}}
-          <span>Đang theo dõi</span>
+          <span>{{item.votedBtnText}}</span>
           {{else}}
           {{d-icon "user-plus"}}
-          <span>Theo dõi</span>
+          <span>{{item.voteBtnText}}</span>
           {{/if}}
         </button>
 
