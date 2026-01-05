@@ -28,7 +28,7 @@
         <div class="card-tags-list" {{on "mousedown" this.onTagsMouseDown}} {{on "mouseleave" this.onTagsMouseLeave}}
           {{on "mouseup" this.onTagsMouseUp}} {{on "mousemove" this.onTagsMouseMove}} {{on "click" this.onTagsClick}}>
           {{#each item.tags as |tag|}}
-          <span class="card-tag">{{tag}}</span>
+          <span class="card-tag" role="button" data-url={{tag.url}}>{{tag.name}}</span>
           {{/each}}
         </div>
 
