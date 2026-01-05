@@ -13,11 +13,7 @@
 
         <!-- Name -->
         <h2 class="card-name">
-          {{#if item.name}}
-          {{item.name}}
-          {{else}}
-          {{item.username}}
-          {{/if}}
+          {{item.displayName}}
         </h2>
 
         <!-- Badge/Tag -->
@@ -27,7 +23,7 @@
 
         <!-- Description/Excerpt -->
         <p class="card-description">
-          {{item.title}}
+          {{item.displayDescription}}
         </p>
       </div>
 
@@ -35,15 +31,14 @@
       <div class="card-footer">
         <!-- Vote Action Button (Left) -->
         <button class="btn-vote-action {{if item.topic.user_voted 'voted'}}" {{on "click" (fn this.toggleVote item)}}
-          title={{if item.topic.user_voted "Remove Vote" "Upvote" }}>
-          {{d-icon "arrow-up"}}
-          <span>
-            {{#if item.topic.user_voted}}
-            Đã Vote
-            {{else}}
-            Upvote
-            {{/if}}
-          </span>
+          title={{if item.topic.user_voted "Hủy theo dõi" "Theo dõi" }}>
+          {{#if item.topic.user_voted}}
+          {{d-icon "check"}}
+          <span>Đang theo dõi</span>
+          {{else}}
+          {{d-icon "user-plus"}}
+          <span>Theo dõi</span>
+          {{/if}}
         </button>
 
         <!-- Vote Count Display (Right) -->
