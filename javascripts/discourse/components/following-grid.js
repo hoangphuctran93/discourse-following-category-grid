@@ -62,23 +62,73 @@ export default class FollowingGrid extends Component {
     }
   }
 
+  // Drag to Scroll State
+  isDown = false;
+  startX = 0;
+  scrollLeft = 0;
+  isDragging = false;
+
   @action
   toggleSelect(event) {
     if (event) {
       event.stopImmediatePropagation();
-      // Do NOT preventDefault if using standard Input helper, otherwise it won't check.
-      // But since we are binding to @checked={{item.topic.selected}}, it might be 2-way data binding.
-      // Let's safe-guard bubbling.
     }
   }
 
+  // --- Drag to Scroll Handlers ---
+
   @action
-  stopPropagation(event) {
-    if (event) {
-      event.stopImmediatePropagation();
-      // For scroll interaction, we might not want preventDefault (to allow drag scroll), 
-      // but purely to stop the click from bubbling to the parent "visit" action.
+  onTagsMouseDown(event) {
+    const slider = event.currentTarget;
+    this.isDown = true;
+    this.isDragging = false; // Reset drag status
+    this.startX = event.pageX - slider.offsetLeft;
+    this.scrollLeft = slider.scrollLeft;
+
+    // Optional: Add 'active' class for cursor grabbing styling if needed
+    // slider.classList.add('active');
+  }
+
+  @action
+  onTagsMouseLeave() {
+    this.isDown = false;
+  }
+
+  @action
+  onTagsMouseUp() {
+    this.isDown = false;
+    // Delay resetting isDragging slightly to allow the 'click' event to fire and check it
+    // But usually click fires immediately after mouseup.
+    // We let onTagsClick handle the check.
+  }
+
+  @action
+  onTagsMouseMove(event) {
+    if (!this.isDown) return;
+
+    event.preventDefault(); // Stop text selection
+    const slider = event.currentTarget;
+    const x = event.pageX - slider.offsetLeft;
+    const walk = (x - this.startX) * 2; // Scroll-fast multiplier
+
+    // Threshold to consider it a drag
+    if (Math.abs(x - this.startX) > 5) {
+      this.isDragging = true;
     }
+
+    slider.scrollLeft = this.scrollLeft - walk;
+  }
+
+  @action
+  onTagsClick(event) {
+    // If we were dragging, STOP the click from bubbling to card navigation
+    if (this.isDragging) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+      // Reset for next time
+      this.isDragging = false;
+    }
+    // If we were NOT dragging, let it bubble => Card navigation happens
   }
 
   @action

@@ -24,8 +24,9 @@
         </h2>
 
         <!-- Badge/Tag -->
-        <!-- Tags List -->
-        <div class="card-tags-list" {{on "click" this.stopPropagation}}>
+        <!-- Tags List with Drag-to-Scroll -->
+        <div class="card-tags-list" {{on "mousedown" this.onTagsMouseDown}} {{on "mouseleave" this.onTagsMouseLeave}}
+          {{on "mouseup" this.onTagsMouseUp}} {{on "mousemove" this.onTagsMouseMove}} {{on "click" this.onTagsClick}}>
           {{#each item.tags as |tag|}}
           <span class="card-tag">{{tag}}</span>
           {{/each}}
