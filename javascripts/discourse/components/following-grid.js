@@ -55,10 +55,8 @@ export default class FollowingGrid extends Component {
 
   @action
   visit(item) {
-    if (item.id) {
-      this.router.transitionTo("topic.show", item.id);
-    } else {
-      window.location.href = item.url;
+    if (item.url) {
+      DiscourseURL.routeTo(item.url);
     }
   }
 
@@ -71,13 +69,6 @@ export default class FollowingGrid extends Component {
 
     const direction = item.userVoted ? "remove" : "up";
 
-    // Optimistic UI Update using Ember.set on the underlying topic model
-    // This allows the change to reflect immediately if the template is observing the topic model, 
-    // or if we trigger a re-render. Since 'item' is a POJO created in getter, 
-    // we must manually update the item status OR force re-computation.
-    // However, Glimmer tracked properties are best.
-    // We will update the 'topic' Ember Object which is efficient.
-
     const topic = item.topic;
     if (topic) {
       const oldVoteCount = topic.get("vote_count") || 0;
@@ -88,7 +79,7 @@ export default class FollowingGrid extends Component {
     }
 
     try {
-      await ajax("/topic_votings/vote", {
+      await ajax("/voting/vote", {
         type: "POST",
         data: { topic_id: item.id, type: direction },
       });
