@@ -100,4 +100,3 @@ export default class FollowingGrid extends Component {
     }
   }
 }
-}
