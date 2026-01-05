@@ -1,0 +1,53 @@
+<div class="following-grid-container">
+  {{#each this.gridItems as |item|}}
+    <div class="following-card-wrapper">
+      <div class="following-card">
+        <!-- Dynamic Gradient Header -->
+        <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
+        
+        <div class="card-content">
+          <!-- Avatar -->
+          <div class="card-avatar-container">
+            <img 
+              alt={{item.username}} 
+              class="card-avatar" 
+              src={{item.avatarUrl}}
+            />
+            <div class="online-status-dot"></div>
+          </div>
+
+          <!-- Name -->
+          <h2 class="card-name">
+            {{#if item.name}}
+              {{item.name}}
+            {{else}}
+              {{item.username}}
+            {{/if}}
+          </h2>
+
+          <!-- Badge/Tag -->
+          <span class="card-category-pill">
+            {{item.categoryName}}
+          </span>
+
+          <!-- Description/Excerpt -->
+          <p class="card-description">
+            {{item.title}}
+          </p>
+        </div>
+
+        <!-- Footer / Actions -->
+        <div class="card-footer">
+          <a href={{item.url}} class="btn-follow">
+            {{d-icon "user-plus"}}
+            <span>Theo dõi</span>
+          </a>
+          <button class="btn-like" title="Likes">
+            {{d-icon "heart"}}
+            <span class="like-count">{{item.likes}}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  {{/each}}
+</div>
