@@ -4,7 +4,6 @@ import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DiscourseURL from "discourse/lib/url";
-import I18n from "discourse/i18n";
 
 export default class FollowingGrid extends Component {
   @service router;
@@ -50,8 +49,8 @@ export default class FollowingGrid extends Component {
         url: `/t/${topic.slug}/${topic.id}`, // specific url property
         topic: topic, // pass native object for actions
         gradientStyle: gradients[index % gradients.length],
-        voteBtnText: I18n.t(settings.vote_button_text, { defaultValue: settings.vote_button_text }) || "Theo dõi",
-        votedBtnText: I18n.t(settings.voted_button_text, { defaultValue: settings.voted_button_text }) || "Đang theo dõi"
+        voteBtnText: settings.vote_button_text || "Theo dõi",
+        votedBtnText: settings.voted_button_text || "Đang theo dõi"
       };
     });
   }

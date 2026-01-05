@@ -6,10 +6,10 @@ following_grid_category:
 
 vote_button_text:
   default: "Theo dõi"
-  description: "text_or_translation_key_for_unvoted_state"
+  description: "text_for_unvoted_state"
   type: string
 
 voted_button_text:
   default: "Đang theo dõi"
-  description: "text_or_translation_key_for_voted_state"
+  description: "text_for_voted_state"
   type: string
