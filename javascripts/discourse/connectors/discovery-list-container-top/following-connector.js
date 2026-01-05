@@ -24,6 +24,14 @@ export default class FollowingConnector extends Component {
     }
 
     get topics() {
-        return this.args.outletArgs?.topics;
+        console.log("FollowingConnector outletArgs:", this.args.outletArgs);
+        if (this.args.outletArgs?.topics) {
+            return this.args.outletArgs.topics;
+        }
+        // Fallback attempt: check model
+        if (this.args.outletArgs?.model?.topics) {
+            return this.args.outletArgs.model.topics;
+        }
+        return [];
     }
 }
