@@ -184,10 +184,12 @@ $transition-speed: 300ms;
     white-space: nowrap;
     margin-bottom: 0.5rem;
 
-    // Critical Constraints to force scroll within padded parent
-    width: 100%;
-    min-width: 0;
+    // Fit content: Centers when small (via parent align-items:center), Caps at 100% when large.
+    width: fit-content;
     max-width: 100%;
+    min-width: 0;
+
+    padding-bottom: 0.25rem;
 
     scrollbar-width: none;
     /* Firefox */
