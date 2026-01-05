@@ -1,7 +1,8 @@
 following_grid_category:
   type: list
+  list_type: category
   default: ""
-  description: "list_of_category_slugs_or_ids_case_sensitive"
+  description: "list_of_category_slugs_or_ids"
 
 vote_button_text:
   default: "Theo dõi"
