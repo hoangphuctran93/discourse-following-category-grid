@@ -1,6 +1,6 @@
 following_grid_category:
   default: "following"
-  description: "slug_or_id_of_category_to_apply_grid_layout"
+  description: "comma_separated_list_of_category_slugs_or_ids"
   type: string
 
 vote_button_text:
