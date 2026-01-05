@@ -1,7 +1,6 @@
 following_grid_category:
-  default: "following"
-  description: "comma_separated_list_of_category_slugs_or_ids"
-  type: string
+  type: list
+  description: "list_of_category_slugs_or_ids"
 
 vote_button_text:
   default: "Theo dõi"
