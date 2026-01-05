@@ -43,11 +43,14 @@ export default class FollowingGrid extends Component {
         displayDescription: topic.excerpt || "",
         categoryName: topic.category ? topic.category.name : "General",
         thumbnailUrl: thumbnailUrl,
+        tags: topic.tags || [],
         voteCount: topic.vote_count || 0, // Using vote_count from topic voting plugin
         userVoted: topic.user_voted || false,
         url: `/t/${topic.slug}/${topic.id}`, // specific url property
         topic: topic, // pass native object for actions
-        gradientStyle: gradients[index % gradients.length]
+        gradientStyle: gradients[index % gradients.length],
+        voteBtnText: settings.vote_button_text || "Theo dõi",
+        votedBtnText: settings.voted_button_text || "Đang theo dõi"
       };
     });
   }
@@ -56,6 +59,16 @@ export default class FollowingGrid extends Component {
   visit(item) {
     if (item.url) {
       DiscourseURL.routeTo(item.url);
+    }
+  }
+
+  @action
+  toggleSelect(event) {
+    if (event) {
+      event.stopImmediatePropagation();
+      // Do NOT preventDefault if using standard Input helper, otherwise it won't check.
+      // But since we are binding to @checked={{item.topic.selected}}, it might be 2-way data binding.
+      // Let's safe-guard bubbling.
     }
   }
 

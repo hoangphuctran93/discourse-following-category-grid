@@ -1,0 +1,14 @@
+following_grid_category:
+  default: "following"
+  description: "slug_or_id_of_category_to_apply_grid_layout"
+  type: string
+
+vote_button_text:
+  default: "Theo dõi"
+  description: "text_for_unvoted_state"
+  type: string
+
+voted_button_text:
+  default: "Đang theo dõi"
+  description: "text_for_voted_state"
+  type: string
