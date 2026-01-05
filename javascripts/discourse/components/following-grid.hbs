@@ -25,7 +25,7 @@
 
         <!-- Badge/Tag -->
         <!-- Tags List -->
-        <div class="card-tags-list">
+        <div class="card-tags-list" {{on "click" this.stopPropagation}}>
           {{#each item.tags as |tag|}}
           <span class="card-tag">{{tag}}</span>
           {{/each}}

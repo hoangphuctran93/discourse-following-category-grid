@@ -73,6 +73,15 @@ export default class FollowingGrid extends Component {
   }
 
   @action
+  stopPropagation(event) {
+    if (event) {
+      event.stopImmediatePropagation();
+      // For scroll interaction, we might not want preventDefault (to allow drag scroll), 
+      // but purely to stop the click from bubbling to the parent "visit" action.
+    }
+  }
+
+  @action
   async toggleVote(item, event) {
     if (event) {
       event.stopImmediatePropagation();
