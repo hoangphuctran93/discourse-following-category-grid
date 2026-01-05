@@ -4,7 +4,7 @@ import { getOwner } from "@ember/application";
 
 export default class FollowingConnector extends Component {
     @service router;
-    @service("controller:discovery/topics") discoveryTopicsController;
+
 
     get shouldRender() {
         const category = this.args.outletArgs?.category;
@@ -66,7 +66,5 @@ export default class FollowingConnector extends Component {
         return [];
     }
 
-    get bulkSelectEnabled() {
-        return this.discoveryTopicsController && this.discoveryTopicsController.bulkSelectEnabled;
-    }
+
 }

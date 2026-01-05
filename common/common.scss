@@ -211,19 +211,7 @@ $transition-speed: 300ms;
     }
   }
 
-  // Bulk Select Checkbox
-  .card-bulk-select {
-    position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    z-index: 10;
 
-    input[type="checkbox"] {
-      width: 1.25rem;
-      height: 1.25rem;
-      cursor: pointer;
-    }
-  }
 }
 
 // Global Logic to Hide Default List
