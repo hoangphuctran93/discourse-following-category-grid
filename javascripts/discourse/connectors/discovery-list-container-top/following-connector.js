@@ -14,7 +14,13 @@ export default class FollowingConnector extends Component {
             return false;
         }
 
-        const targets = settingValue.split("|").map(t => t.trim()).filter(Boolean);
+        let targets;
+        if (Array.isArray(settingValue)) {
+            targets = settingValue.map(t => t.toString());
+        } else {
+            targets = settingValue.toString().split("|").map(t => t.trim());
+        }
+        targets = targets.filter(Boolean);
 
         if (category) {
             const isTarget = targets.some(target =>

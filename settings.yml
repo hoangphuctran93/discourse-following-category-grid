@@ -1,5 +1,5 @@
 following_grid_category:
-  type: category_list
+  type: categories
   default: ""
   description: "list_of_category_slugs_or_ids"
 

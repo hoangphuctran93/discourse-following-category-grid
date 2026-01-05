@@ -7,7 +7,13 @@ export default apiInitializer("1.0", (api) => {
 
         if (!settingValue) return;
 
-        const targets = settingValue.split("|").map(t => t.trim()).filter(Boolean);
+        let targets;
+        if (Array.isArray(settingValue)) {
+            targets = settingValue.map(t => t.toString());
+        } else {
+            targets = settingValue.toString().split("|").map(t => t.trim());
+        }
+        targets = targets.filter(Boolean);
 
         // Check if URL contains /c/target (slug) or /c/.../target (ID)
         const isTargetPage = targets.some(target => {
