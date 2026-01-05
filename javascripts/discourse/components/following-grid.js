@@ -43,7 +43,7 @@ export default class FollowingGrid extends Component {
         displayDescription: topic.excerpt || "",
         categoryName: topic.category ? topic.category.name : "General",
         thumbnailUrl: thumbnailUrl,
-        tags: topic.tags || [],
+        tags: (topic.tags || []).map(t => ({ name: t, url: `/tag/${t}` })),
         voteCount: topic.vote_count || 0, // Using vote_count from topic voting plugin
         userVoted: topic.user_voted || false,
         url: `/t/${topic.slug}/${topic.id}`, // specific url property
@@ -121,14 +121,24 @@ export default class FollowingGrid extends Component {
 
   @action
   onTagsClick(event) {
-    // If we were dragging, STOP the click from bubbling to card navigation
+    // 1. If dragging, STOP everything (no navigation, no bubbling)
     if (this.isDragging) {
       event.stopImmediatePropagation();
       event.preventDefault();
-      // Reset for next time
       this.isDragging = false;
+      return;
     }
-    // If we were NOT dragging, let it bubble => Card navigation happens
+
+    // 2. If NOT dragging, check if user clicked a specific tag
+    const tagElement = event.target.closest('.card-tag');
+    if (tagElement && tagElement.dataset.url) {
+      event.stopImmediatePropagation(); // Don't allow bubble to Topic
+      event.preventDefault();
+      DiscourseURL.routeTo(tagElement.dataset.url); // Navigate to Tag
+      return;
+    }
+
+    // 3. If clicked on empty space in tags list, Let it bubble -> Card Navigation (Topic) logic takes over
   }
 
   @action
