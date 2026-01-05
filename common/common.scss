@@ -184,9 +184,9 @@ $transition-speed: 300ms;
     white-space: nowrap;
     margin-bottom: 0.5rem;
 
-    // Fit content: Centers when small (via parent align-items:center), Caps at 100% when large.
+    // Strict User Requirement: Max Width 250px + Fit Content
     width: fit-content;
-    max-width: 100%;
+    max-width: 250px;
     min-width: 0;
 
     padding-bottom: 0.25rem;
