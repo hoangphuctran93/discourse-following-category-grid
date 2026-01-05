@@ -78,10 +78,18 @@ export default class FollowingGrid extends Component {
     }
 
     try {
-      await ajax("/voting/vote", {
-        type: "POST",
-        data: { topic_id: item.id, type: direction },
-      });
+      if (direction === "up") {
+        await ajax("/voting/vote", {
+          type: "POST",
+          data: { topic_id: item.id }, // Usually doesn't need type if just upvoting
+        });
+      } else {
+        // Unvote Logic
+        await ajax("/voting/unvote", {
+          type: "POST",
+          data: { topic_id: item.id }
+        });
+      }
     } catch (e) {
       popupAjaxError(e);
       // Revert if failed
@@ -91,4 +99,5 @@ export default class FollowingGrid extends Component {
       }
     }
   }
+}
 }
