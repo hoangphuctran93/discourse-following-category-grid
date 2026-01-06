@@ -9,7 +9,43 @@ import { tracked } from '@glimmer/tracking';
 export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
-  @service appEvents;
+  @service dialog;
+
+  // --- Complex Actions (Placeholder/Future Integration) ---
+  @action
+  async bulkUpdateCategory() {
+    this.dialog.alert("Complex bulk actions like 'Update Category' require native modal integration which is currently limited in this view.");
+  }
+
+  @action
+  async bulkUpdateNotifications() {
+    this.dialog.alert("Bulk Notification Level update is coming soon.");
+  }
+
+  @action
+  async bulkAppendTags() {
+    this.dialog.alert("Bulk Append Tags is coming soon.");
+  }
+
+  @action
+  async bulkReplaceTags() {
+    this.dialog.alert("Bulk Replace Tags is coming soon.");
+  }
+
+  @action
+  async bulkRemoveTags() {
+    this.dialog.alert("Bulk Remove Tags is coming soon.");
+  }
+
+  @action
+  async bulkAssign() {
+    this.dialog.alert("Bulk Assign is coming soon.");
+  }
+
+  @action
+  async bulkUnassign() {
+    this.dialog.alert("Bulk Unassign is coming soon.");
+  }
 
   @tracked selectionVersion = 0;
   @tracked _bulkSelectEnabled = false;
