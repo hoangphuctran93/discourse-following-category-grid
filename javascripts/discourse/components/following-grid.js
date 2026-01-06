@@ -12,6 +12,15 @@ export default class FollowingGrid extends Component {
 
   @tracked selectionVersion = 0;
 
+  constructor() {
+    super(...arguments);
+    console.error("FollowingGrid: DEBUG INIT", {
+      discoveryService: !!this.discovery,
+      bulkSelectEnabled: this.discovery?.bulkSelectEnabled,
+      topicsCount: (this.args.topics || []).length
+    });
+  }
+
   get bulkSelectEnabled() {
     return this.discovery.bulkSelectEnabled;
   }
@@ -77,18 +86,18 @@ export default class FollowingGrid extends Component {
     this.selectionVersion; // Depend on version
     const topics = this.args.topics || [];
     const selected = topics.filter(t => t.selected);
-    console.log("FollowingGrid: selectedTopics calculated", {
-      totalTopics: topics.length,
-      selectedCount: selected.length,
-      version: this.selectionVersion,
-      firstSelected: selected[0]?.id
+
+    console.error("FollowingGrid: DEBUG selectedTopics", {
+      count: selected.length,
+      total: topics.length
     });
+
     return selected;
   }
 
   get hasSelection() {
     const has = this.selectedTopics.length > 0;
-    console.log("FollowingGrid: hasSelection", has);
+    console.error("FollowingGrid: DEBUG hasSelection", has);
     return has;
   }
 
@@ -102,7 +111,7 @@ export default class FollowingGrid extends Component {
       event.stopImmediatePropagation();
     }
 
-    console.log("FollowingGrid: toggleSelection called for", topic.id, "Current selected:", topic.selected);
+    console.error("FollowingGrid: DEBUG toggleSelection called", topic.id);
 
     if (topic.toggleProperty) {
       topic.toggleProperty("selected");
@@ -114,7 +123,7 @@ export default class FollowingGrid extends Component {
         topic.selected = newVal;
       }
     }
-    console.log("FollowingGrid: topic.selected is now", topic.selected);
+    console.error("FollowingGrid: DEBUG topic.selected is now", topic.selected);
     this.selectionVersion++;
   }
 
