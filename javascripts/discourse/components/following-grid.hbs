@@ -5,6 +5,9 @@
     <div class="bulk-controls-left">
       {{#if this.hasSelection}}
       {{! Bulk Actions Dropdown }}
+            <details class="bulk-actions-dropdown">
+                      <summary>{{d-icon "wrench"}}</summary>
+                    <ul
       {{! New Actions }}
       <li>
         <button {{on "click" this.bulkClose}}>
