@@ -1,4 +1,5 @@
 en:
+  # Bulk Actions translations
   following_grid:
     title: "Following"
     bulk_select: "Bulk Select"
