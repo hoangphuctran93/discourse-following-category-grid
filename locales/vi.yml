@@ -1,9 +1,13 @@
 vi:
-  category_following:
+  following_grid:
+    title: "Đang theo dõi"
+    bulk_select: "Chọn nhiều"
+    cancel_bulk_select: "Hủy chọn"
     bulk_actions:
-      follow_all: "Theo dõi bài đã chọn"
-      unfollow_all: "Bỏ theo dõi bài đã chọn"
-      close_topics: "Đóng các bài đã chọn"
-      archive_topics: "Lưu trữ các bài đã chọn"
+      label: "Thao tác hàng loạt"
+      follow_all: "Theo dõi đã chọn"
+      unfollow_all: "Bỏ theo dõi đã chọn"
+      close_topics: "Đóng đã chọn"
+      archive_topics: "Lưu trữ đã chọn"
       delete_topics: "Xóa đã chọn"
-      unlist_topics: "Ẩn đã chọn"
+      unlist_topics: "Ẩn đã chọn"ã chọn"
