@@ -8,29 +8,40 @@
       <details class="bulk-actions-dropdown">
         <summary>{{d-icon "wrench"}}</summary>
         <ul>
-          {{! New Actions }}
+          <li>
+            <button {{on "click" this.bulkFollow}}>
+              {{d-icon "user-plus"}}
+              <span>{{i18n "following_grid.bulk_actions.follow_all"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkUnfollow}}>
+              {{d-icon "user-times"}}
+              <span>{{i18n "following_grid.bulk_actions.unfollow_all"}}</span>
+            </button>
+          </li>
           <li>
             <button {{on "click" this.bulkClose}}>
               {{d-icon "lock"}}
-              <span>{{i18n "category_following.bulk_actions.close_topics"}}</span>
+              <span>{{i18n "following_grid.bulk_actions.close_topics"}}</span>
             </button>
           </li>
           <li>
             <button {{on "click" this.bulkArchive}}>
               {{d-icon "archive"}}
-              <span>{{i18n "category_following.bulk_actions.archive_topics"}}</span>
+              <span>{{i18n "following_grid.bulk_actions.archive_topics"}}</span>
             </button>
           </li>
           <li>
             <button {{on "click" this.bulkUnlist}}>
               {{d-icon "eye-slash"}}
-              <span>{{i18n "category_following.bulk_actions.unlist_topics"}}</span>
+              <span>{{i18n "following_grid.bulk_actions.unlist_topics"}}</span>
             </button>
           </li>
           <li>
             <button {{on "click" this.bulkDelete}} class="btn-danger">
               {{d-icon "trash-alt"}}
-              <span>{{i18n "category_following.bulk_actions.delete_topics"}}</span>
+              <span>{{i18n "following_grid.bulk_actions.delete_topics"}}</span>
             </button>
           </li>
         </ul>
