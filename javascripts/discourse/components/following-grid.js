@@ -4,46 +4,29 @@ import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DiscourseURL from "discourse/lib/url";
-import { getOwner } from "@ember/application";
 import { tracked } from '@glimmer/tracking';
 
 export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
 
-  @tracked isBulkSelectEnabled = false;
-  _pollInterval = null;
+  @tracked selectionVersion = 0;
 
-  constructor() {
-    super(...arguments);
-    this.startStatePolling();
-  }
-
-  willDestroy() {
-    super.willDestroy(...arguments);
-    if (this._pollInterval) {
-      clearInterval(this._pollInterval);
-    }
-  }
-
-  startStatePolling() {
-    // Check every 500ms for the native bulk select class
-    // This is a robust fallback since direct controller access is flaky in themes
-    this._pollInterval = setInterval(() => {
-      const isEnabled = !!document.querySelector(".topic-list.bulk-select-enabled, body.bulk-select-enabled");
-      if (this.isBulkSelectEnabled !== isEnabled) {
-        this.isBulkSelectEnabled = isEnabled;
-      }
-    }, 500);
+  get bulkSelectEnabled() {
+    return this.discovery.bulkSelectEnabled;
   }
 
   get showCheckboxes() {
-    return this.isBulkSelectEnabled;
+    return this.bulkSelectEnabled;
   }
 
   get gridItems() {
+    // Consume selectionVersion to force re-calculation when selection changes
+    // This ensures checkboxes update correctly if external state changes or we toggle
+    this.selectionVersion;
+
     const topics = this.args.topics || [];
-    const settings = this.args.settings || {}; // Ensure settings is available
+    const settings = this.args.settings || {};
 
     const gradients = [
       "linear-gradient(to right, #3b82f6, #6366f1)", // blue to indigo
@@ -57,7 +40,6 @@ export default class FollowingGrid extends Component {
       const opPoster = posters.find((p) => p.description.includes("Original Poster")) || posters[0];
       const user = opPoster && opPoster.user ? opPoster.user : null;
 
-      // Thumbnail Logic: Topic Image -> Topic Thumbnail -> Avatar
       let thumbnailUrl = "";
       if (topic.image_url) {
         thumbnailUrl = topic.image_url;
@@ -85,18 +67,29 @@ export default class FollowingGrid extends Component {
         gradientStyle: gradients[index % gradients.length],
         voteBtnText: settings.vote_button_text || "Theo dõi",
         votedBtnText: settings.voted_button_text || "Đang theo dõi",
-        isSelected: topic.selected, // Use native selected property
-        showCheckbox: this.isBulkSelectEnabled // Show checkbox whenever native bulk mode is on
+        isSelected: topic.selected,
+        showCheckbox: this.bulkSelectEnabled
       };
     });
   }
 
   get selectedTopics() {
-    return (this.args.topics || []).filter(t => t.selected);
+    this.selectionVersion; // Depend on version
+    const topics = this.args.topics || [];
+    const selected = topics.filter(t => t.selected);
+    console.log("FollowingGrid: selectedTopics calculated", {
+      totalTopics: topics.length,
+      selectedCount: selected.length,
+      version: this.selectionVersion,
+      firstSelected: selected[0]?.id
+    });
+    return selected;
   }
 
   get hasSelection() {
-    return this.selectedTopics.length > 0;
+    const has = this.selectedTopics.length > 0;
+    console.log("FollowingGrid: hasSelection", has);
+    return has;
   }
 
   get selectedCount() {
@@ -107,15 +100,13 @@ export default class FollowingGrid extends Component {
   toggleSelection(topic, event) {
     if (event) {
       event.stopImmediatePropagation();
-      event.preventDefault();
     }
-    // Toggle native property
+
+    console.log("FollowingGrid: toggleSelection called for", topic.id, "Current selected:", topic.selected);
+
     if (topic.toggleProperty) {
       topic.toggleProperty("selected");
     } else {
-      // Fallback if not an Ember object (unlikely in Discourse)
-      // We use Ember.set if imported, or just direct assignment if POJO (but POJO won't track)
-      // Usually topics are objects.
       const newVal = !topic.selected;
       try {
         topic.set("selected", newVal);
@@ -123,7 +114,8 @@ export default class FollowingGrid extends Component {
         topic.selected = newVal;
       }
     }
-    // Force re-computation if needed, but Glimmer tracks 'topic.selected' if it's a tracked property on the model
+    console.log("FollowingGrid: topic.selected is now", topic.selected);
+    this.selectionVersion++;
   }
 
   @action
@@ -132,6 +124,7 @@ export default class FollowingGrid extends Component {
       if (t.set) t.set("selected", true);
       else t.selected = true;
     });
+    this.selectionVersion++;
   }
 
   @action
@@ -140,6 +133,7 @@ export default class FollowingGrid extends Component {
       if (t.set) t.set("selected", false);
       else t.selected = false;
     });
+    this.selectionVersion++;
   }
 
   @action
@@ -170,7 +164,6 @@ export default class FollowingGrid extends Component {
     const endpoint = isFollow ? "/voting/vote" : "/voting/unvote";
 
     for (const topic of selected) {
-      // Skip if already in desired state
       if (isFollow && topic.user_voted) continue;
       if (!isFollow && !topic.user_voted) continue;
 
@@ -190,65 +183,63 @@ export default class FollowingGrid extends Component {
 
   @action
   async bulkArchive() {
-    await this._performStatusUpdate("archived", true);
+    await this._performBulkOperation("archive");
   }
 
   @action
   async bulkClose() {
-    await this._performStatusUpdate("closed", true);
+    await this._performBulkOperation("close");
   }
 
   @action
   async bulkDelete() {
-    // Delete often requires a DELETE call per topic usually
-    // Endpoint: DELETE /t/:id
-    const selected = this.selectedTopics;
-    if (selected.length === 0) return;
-
-    if (!window.confirm(`Are you sure you want to delete ${selected.length} topics?`)) return;
-
-    for (const topic of selected) {
-      try {
-        await ajax(`/t/${topic.id}`, { type: "DELETE" });
-        // Remove from list? Or just reload?
-      } catch (e) {
-        popupAjaxError(e);
-      }
-    }
-    // Refresh or reload
-    window.location.reload();
+    if (!window.confirm(`Are you sure you want to delete ${this.selectedCount} topics?`)) return;
+    await this._performBulkOperation("delete");
   }
 
   @action
   async bulkUnlist() {
-    await this._performStatusUpdate("visible", false);
+    // 'unlist' operation is standard in Discourse bulk actions
+    await this._performBulkOperation("unlist");
   }
 
-  // Generic status update (closed, archived, visible, pinned)
-  async _performStatusUpdate(status, enabled) {
+  async _performBulkOperation(operationType) {
     const selected = this.selectedTopics;
     if (selected.length === 0) return;
 
-    for (const topic of selected) {
-      try {
-        // PUT /t/:id/status
-        // params: status (closed, archived, etc), enabled (true/false)
-        await ajax(`/t/${topic.id}/status`, {
-          type: "PUT",
-          data: { status: status, enabled: enabled }
-        });
+    const topicIds = selected.map(t => t.id);
 
-        if (topic.set) {
-          topic.set(status, enabled);
+    try {
+      await ajax("/topics/bulk", {
+        type: "PUT",
+        data: {
+          topic_ids: topicIds,
+          operation: { type: operationType }
         }
-      } catch (e) {
-        popupAjaxError(e);
+      });
+
+      // Optimistic UI updates
+      selected.forEach(topic => {
+        if (topic.set) {
+          if (operationType === 'close') topic.set('closed', true);
+          if (operationType === 'archive') topic.set('archived', true);
+          if (operationType === 'unlist') topic.set('visible', false);
+          // For delete, we might want to reload or hide the item
+        }
+      });
+
+      if (operationType === 'delete') {
+        window.location.reload();
       }
+
+    } catch (e) {
+      popupAjaxError(e);
     }
+
     this.clearAll();
   }
 
-  // --- Drag to Scroll Handler (Unchanged) ---
+  // --- Drag to Scroll Handler ---
   isDown = false;
   startX = 0;
   scrollLeft = 0;
