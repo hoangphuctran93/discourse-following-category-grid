@@ -10,11 +10,32 @@ export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
 
-  // Use the native discovery service for bulk select state
+  // Use the native discovery service for bulk select state (with controller fallback)
   get bulkSelectEnabled() {
-    if (this.discovery) {
-      return this.discovery.bulkSelectEnabled;
+    // 1. Try Service (Modern)
+    if (this.discovery && this.discovery.bulkSelectEnabled) {
+      return true;
     }
+
+    // 2. Try Controllers (The native button often toggles the controller state directly)
+    const owner = getOwner(this);
+    const controllers = [
+      "controller:discovery/category",
+      "controller:discovery/topics",
+      "controller:topic-list"
+    ];
+
+    for (const name of controllers) {
+      try {
+        const controller = owner.lookup(name);
+        if (controller && controller.bulkSelectEnabled) {
+          return true;
+        }
+      } catch (e) {
+        // Ignore lookup errors
+      }
+    }
+
     return false;
   }
 
