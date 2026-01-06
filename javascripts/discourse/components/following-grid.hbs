@@ -39,6 +39,12 @@
             </button>
           </li>
           <li>
+            <button {{on "click" this.bulkResetBumpDate}}>
+              {{d-icon "anchor"}}
+              <span>{{i18n "following_grid.bulk_actions.reset_bump_date"}}</span>
+            </button>
+          </li>
+          <li>
             <button {{on "click" this.bulkDelete}} class="btn-danger">
               {{d-icon "trash-alt"}}
               <span>{{i18n "following_grid.bulk_actions.delete_topics"}}</span>

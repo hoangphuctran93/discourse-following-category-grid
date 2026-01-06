@@ -11,3 +11,4 @@ en:
       archive_topics: "Archive Selected"
       delete_topics: "Delete Selected"
       unlist_topics: "Unlist Selected"
+      reset_bump_date: "Reset Bump Date"

@@ -228,6 +228,11 @@ export default class FollowingGrid extends Component {
     await this._performBulkOperation("unlist");
   }
 
+  @action
+  async bulkResetBumpDate() {
+    await this._performBulkOperation("reset_bump_date");
+  }
+
   async _performBulkOperation(operationType) {
     const selected = this.selectedTopics;
     if (selected.length === 0) return;
