@@ -225,6 +225,7 @@ body.custom-following-page {
     display: grid !important;
   }
 }
+
 // ========================================
 // Bulk Select Styles
 // ========================================
@@ -347,7 +348,7 @@ body.custom-following-page {
     &:hover {
       background: var(--primary-medium);
     }
-    
+
     &::-webkit-details-marker {
       display: none;
     }
@@ -361,42 +362,50 @@ body.custom-following-page {
 
   &[open] summary {
     background: var(--primary-medium);
+
     &:after {
       content: "▲";
     }
   }
 
-  ul {
+  .bulk-actions-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 0.5em);
     left: 0;
     z-index: 999;
     background: var(--secondary);
     border: 1px solid var(--primary-low);
     border-radius: 0.5em;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    margin-top: 0.5em;
-    min-width: 220px; // Slightly wider
+    min-width: 240px;
     padding: 0.5em 0;
     list-style: none;
+    margin: 0;
     animation: fadeIn 0.1s ease-out;
 
     li {
       padding: 0;
       margin: 0;
 
+      &.divider {
+        height: 1px;
+        background: var(--primary-low);
+        margin: 0.25em 0;
+      }
+
       button {
         width: 100%;
         text-align: left;
         background: none;
         border: none;
-        padding: 0.75em 1em;
+        padding: 0.6em 1em;
         cursor: pointer;
         display: flex;
         align-items: center;
         gap: 0.75em;
         color: var(--primary);
-        font-size: 0.95em;
+        font-size: 0.9em;
+        font-weight: 500;
         transition: background 0.1s;
 
         &:hover {
@@ -407,21 +416,18 @@ body.custom-following-page {
         .d-icon {
           color: var(--primary-medium);
           width: 1em;
+          text-align: center;
         }
 
         &.btn-danger {
           color: var(--danger);
-          border-top: 1px solid var(--primary-low);
-          margin-top: 0.25em;
-          padding-top: 0.75em;
-          
+
           .d-icon {
             color: var(--danger);
           }
 
           &:hover {
             background: var(--danger-low);
-            color: var(--danger);
           }
         }
       }
@@ -430,8 +436,15 @@ body.custom-following-page {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 // Checkbox Styles

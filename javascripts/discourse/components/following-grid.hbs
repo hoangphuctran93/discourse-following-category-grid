@@ -7,19 +7,30 @@
       {{! Bulk Actions Dropdown }}
       <details class="bulk-actions-dropdown">
         <summary>{{d-icon "wrench"}}</summary>
-        <ul>
+        <ul class="bulk-actions-menu">
+          {{! Manage Actions }}
           <li>
-            <button {{on "click" this.bulkFollow}}>
-              {{d-icon "user-plus"}}
-              <span>{{i18n "following_grid.bulk_actions.follow_all"}}</span>
+            <button {{on "click" this.bulkUpdateCategory}}>
+              {{d-icon "pencil-alt"}}
+              <span>{{i18n "following_grid.bulk_actions.update_category"}}</span>
             </button>
           </li>
           <li>
-            <button {{on "click" this.bulkUnfollow}}>
-              {{d-icon "user-times"}}
-              <span>{{i18n "following_grid.bulk_actions.unfollow_all"}}</span>
+            <button {{on "click" this.bulkUpdateNotifications}}>
+              {{d-icon "bell"}}
+              <span>{{i18n "following_grid.bulk_actions.update_notifications"}}</span>
             </button>
           </li>
+          <li>
+            <button {{on "click" this.bulkResetBumpDate}}>
+              {{d-icon "anchor"}}
+              <span>{{i18n "following_grid.bulk_actions.reset_bump_date"}}</span>
+            </button>
+          </li>
+
+          <li class="divider"></li>
+
+          {{! State Actions }}
           <li>
             <button {{on "click" this.bulkClose}}>
               {{d-icon "lock"}}
@@ -38,12 +49,32 @@
               <span>{{i18n "following_grid.bulk_actions.unlist_topics"}}</span>
             </button>
           </li>
+
+          <li class="divider"></li>
+
+          {{! Tag Actions }}
           <li>
-            <button {{on "click" this.bulkResetBumpDate}}>
-              {{d-icon "anchor"}}
-              <span>{{i18n "following_grid.bulk_actions.reset_bump_date"}}</span>
+            <button {{on "click" this.bulkAppendTags}}>
+              {{d-icon "tag"}}
+              <span>{{i18n "following_grid.bulk_actions.append_tags"}}</span>
             </button>
           </li>
+          <li>
+            <button {{on "click" this.bulkReplaceTags}}>
+              {{d-icon "tags"}}
+              <span>{{i18n "following_grid.bulk_actions.replace_tags"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkRemoveTags}}>
+              {{d-icon "eraser"}}
+              <span>{{i18n "following_grid.bulk_actions.remove_tags"}}</span>
+            </button>
+          </li>
+
+          <li class="divider"></li>
+
+          {{! Destructive }}
           <li>
             <button {{on "click" this.bulkDelete}} class="btn-danger">
               {{d-icon "trash-alt"}}

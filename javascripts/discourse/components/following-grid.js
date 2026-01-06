@@ -233,6 +233,45 @@ export default class FollowingGrid extends Component {
     await this._performBulkOperation("reset_bump_date");
   }
 
+  // --- Complex Actions (Placeholder/Future Integration) ---
+  @action
+  async bulkUpdateCategory() {
+    // Ideally this opens the native modal.
+    // For now, prompt generic message or try to use modal service if we can find it.
+    // This is a placeholder for the UI update.
+    window.alert("Complex bulk actions like 'Update Category' require native modal integration which is currently limited in this view.");
+  }
+
+  @action
+  async bulkUpdateNotifications() {
+    window.alert("Bulk Notification Level update is coming soon.");
+  }
+
+  @action
+  async bulkAppendTags() {
+    window.alert("Bulk Append Tags is coming soon.");
+  }
+
+  @action
+  async bulkReplaceTags() {
+    window.alert("Bulk Replace Tags is coming soon.");
+  }
+
+  @action
+  async bulkRemoveTags() {
+    window.alert("Bulk Remove Tags is coming soon.");
+  }
+
+  @action
+  async bulkAssign() {
+    window.alert("Bulk Assign is coming soon.");
+  }
+
+  @action
+  async bulkUnassign() {
+    window.alert("Bulk Unassign is coming soon.");
+  }
+
   async _performBulkOperation(operationType) {
     const selected = this.selectedTopics;
     if (selected.length === 0) return;
