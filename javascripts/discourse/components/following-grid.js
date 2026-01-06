@@ -9,20 +9,47 @@ import { tracked } from '@glimmer/tracking';
 export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
+  @service appEvents;
 
   @tracked selectionVersion = 0;
+  @tracked _bulkSelectEnabled = false;
 
   constructor() {
     super(...arguments);
-    console.error("FollowingGrid: DEBUG INIT", {
-      discoveryService: !!this.discovery,
-      bulkSelectEnabled: this.discovery?.bulkSelectEnabled,
-      topicsCount: (this.args.topics || []).length
+
+    // Listen for possible events (trying multiple known patterns)
+    this.appEvents.on('bulk-select:toggle', this, this.toggleBulkSelect);
+    this.appEvents.on('discovery:bulk-selection-toggled', this, this.toggleBulkSelect);
+
+    // Also try to sync with service if it becomes available later
+    if (this.discovery && this.discovery.bulkSelectEnabled) {
+      this._bulkSelectEnabled = this.discovery.bulkSelectEnabled;
+    }
+
+    console.error("FollowingGrid: Component Initialized (Event Listener Mode)", {
+      appEvents: !!this.appEvents,
+      initialState: this._bulkSelectEnabled
     });
   }
 
+  willDestroy() {
+    super.willDestroy(...arguments);
+    this.appEvents.off('bulk-select:toggle', this, this.toggleBulkSelect);
+    this.appEvents.off('discovery:bulk-selection-toggled', this, this.toggleBulkSelect);
+  }
+
+  @action
+  toggleBulkSelect() {
+    this._bulkSelectEnabled = !this._bulkSelectEnabled;
+    console.error("FollowingGrid: Event Received! Bulk Select is now", this._bulkSelectEnabled);
+    if (!this._bulkSelectEnabled) {
+      this.clearAll();
+    }
+  }
+
   get bulkSelectEnabled() {
-    return this.discovery.bulkSelectEnabled;
+    // Return internal tracked state
+    return this._bulkSelectEnabled;
   }
 
   get showCheckboxes() {
@@ -30,9 +57,7 @@ export default class FollowingGrid extends Component {
   }
 
   get gridItems() {
-    // Consume selectionVersion to force re-calculation when selection changes
-    // This ensures checkboxes update correctly if external state changes or we toggle
-    this.selectionVersion;
+    this.selectionVersion; // Depend on version
 
     const topics = this.args.topics || [];
     const settings = this.args.settings || {};
@@ -83,22 +108,13 @@ export default class FollowingGrid extends Component {
   }
 
   get selectedTopics() {
-    this.selectionVersion; // Depend on version
+    this.selectionVersion;
     const topics = this.args.topics || [];
-    const selected = topics.filter(t => t.selected);
-
-    console.error("FollowingGrid: DEBUG selectedTopics", {
-      count: selected.length,
-      total: topics.length
-    });
-
-    return selected;
+    return topics.filter(t => t.selected);
   }
 
   get hasSelection() {
-    const has = this.selectedTopics.length > 0;
-    console.error("FollowingGrid: DEBUG hasSelection", has);
-    return has;
+    return this.selectedTopics.length > 0;
   }
 
   get selectedCount() {
@@ -111,8 +127,6 @@ export default class FollowingGrid extends Component {
       event.stopImmediatePropagation();
     }
 
-    console.error("FollowingGrid: DEBUG toggleSelection called", topic.id);
-
     if (topic.toggleProperty) {
       topic.toggleProperty("selected");
     } else {
@@ -123,7 +137,6 @@ export default class FollowingGrid extends Component {
         topic.selected = newVal;
       }
     }
-    console.error("FollowingGrid: DEBUG topic.selected is now", topic.selected);
     this.selectionVersion++;
   }
 
@@ -148,6 +161,10 @@ export default class FollowingGrid extends Component {
   @action
   visit(item) {
     if (this.bulkSelectEnabled) {
+      // Allow clicking the card to toggle selection in bulk mode?
+      // For now, prevent navigation.
+      // Ideally, clicking card should toggle selection.
+      this.toggleSelection(item.topic);
       return;
     }
     if (item.url) {
@@ -208,7 +225,6 @@ export default class FollowingGrid extends Component {
 
   @action
   async bulkUnlist() {
-    // 'unlist' operation is standard in Discourse bulk actions
     await this._performBulkOperation("unlist");
   }
 
@@ -227,13 +243,11 @@ export default class FollowingGrid extends Component {
         }
       });
 
-      // Optimistic UI updates
       selected.forEach(topic => {
         if (topic.set) {
           if (operationType === 'close') topic.set('closed', true);
           if (operationType === 'archive') topic.set('archived', true);
           if (operationType === 'unlist') topic.set('visible', false);
-          // For delete, we might want to reload or hide the item
         }
       });
 
