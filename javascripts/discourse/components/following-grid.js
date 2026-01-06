@@ -1,5 +1,6 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
+import { tracked } from "@glimmer/tracking";
 import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
@@ -7,6 +8,10 @@ import DiscourseURL from "discourse/lib/url";
 
 export default class FollowingGrid extends Component {
   @service router;
+
+  // Bulk Select State
+  @tracked bulkSelectMode = false;
+  @tracked selectedIds = new Set();
 
   get gridItems() {
     const topics = this.args.topics || [];
@@ -50,16 +55,136 @@ export default class FollowingGrid extends Component {
         topic: topic, // pass native object for actions
         gradientStyle: gradients[index % gradients.length],
         voteBtnText: settings.vote_button_text || "Theo dõi",
-        votedBtnText: settings.voted_button_text || "Đang theo dõi"
+        votedBtnText: settings.voted_button_text || "Đang theo dõi",
+        isSelected: this.selectedIds.has(topic.id), // Selection state
+        showCheckbox: this.bulkSelectMode // Show checkbox only in bulk mode
       };
     });
   }
 
+  // Computed properties for bulk select
+  get hasSelection() {
+    return this.selectedIds.size > 0;
+  }
+
+  get selectedCount() {
+    return this.selectedIds.size;
+  }
+
+  get allSelected() {
+    const topics = this.args.topics || [];
+    return topics.length > 0 && this.selectedIds.size === topics.length;
+  }
+
+  get bulkSelectEnabled() {
+    return this.args.bulkSelectEnabled !== false; // Default to true
+  }
+
+  // Bulk Select Actions
+  @action
+  toggleBulkSelectMode() {
+    this.bulkSelectMode = !this.bulkSelectMode;
+    if (!this.bulkSelectMode) {
+      // Clear selections when exiting bulk mode
+      this.selectedIds.clear();
+      this.selectedIds = new Set(); // Trigger reactivity
+    }
+  }
+
+  @action
+  toggleItemSelection(itemId, event) {
+    if (event) {
+      event.stopImmediatePropagation();
+      event.preventDefault();
+    }
+
+    if (this.selectedIds.has(itemId)) {
+      this.selectedIds.delete(itemId);
+    } else {
+      this.selectedIds.add(itemId);
+    }
+    // Trigger reactivity by creating new Set
+    this.selectedIds = new Set(this.selectedIds);
+  }
+
+  @action
+  selectAll() {
+    const topics = this.args.topics || [];
+    topics.forEach(topic => {
+      this.selectedIds.add(topic.id);
+    });
+    this.selectedIds = new Set(this.selectedIds);
+  }
+
+  @action
+  clearAll() {
+    this.selectedIds.clear();
+    this.selectedIds = new Set();
+    this.bulkSelectMode = false;
+  }
+
+  @action
+  clearSelection() {
+    this.selectedIds.clear();
+    this.selectedIds = new Set();
+  }
+
   @action
   visit(item) {
+    // Prevent navigation when in bulk select mode
+    if (this.bulkSelectMode) {
+      return;
+    }
     if (item.url) {
       DiscourseURL.routeTo(item.url);
     }
+  }
+
+  // Bulk Actions
+  @action
+  async bulkFollow() {
+    const selectedTopics = this.gridItems.filter(item => this.selectedIds.has(item.id));
+
+    for (const item of selectedTopics) {
+      if (!item.topic.user_voted) {
+        try {
+          await ajax("/voting/vote", {
+            type: "POST",
+            data: { topic_id: item.id }
+          });
+          item.topic.set("user_voted", true);
+          item.topic.set("vote_count", (item.topic.vote_count || 0) + 1);
+        } catch (e) {
+          popupAjaxError(e);
+        }
+      }
+    }
+
+    // Clear selection after bulk action
+    this.clearSelection();
+  }
+
+  @action
+  async bulkUnfollow() {
+    const selectedTopics = this.gridItems.filter(item => this.selectedIds.has(item.id));
+
+    for (const item of selectedTopics) {
+      if (item.topic.user_voted) {
+        try {
+          await ajax("/voting/unvote", {
+            type: "POST",
+            data: { topic_id: item.id }
+          });
+          item.topic.set("user_voted", false);
+          item.topic.set("vote_count", Math.max(0, (item.topic.vote_count || 0) - 1));
+        } catch (e) {
+          popupAjaxError(e);
+        }
+      }
+    }
+
+    // Clear selection after bulk action
+    this.clearSelection();
   }
 
   // Drag to Scroll State

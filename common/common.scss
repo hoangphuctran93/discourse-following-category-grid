@@ -225,3 +225,208 @@ body.custom-following-page {
     display: grid !important;
   }
 }
+// ========================================
+// Bulk Select Styles
+// ========================================
+
+.following-grid-wrapper {
+  position: relative;
+}
+
+// Stage 1: Bulk Select Toggle Button
+.bulk-select-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
+
+  .btn-bulk-select-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: var(--primary-low);
+    color: var(--primary);
+    border: 1px solid var(--primary-low-mid);
+    cursor: pointer;
+    font-size: var(--font-0);
+    font-weight: 500;
+    transition: all 0.2s;
+
+    .d-icon {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      background-color: var(--primary-low-mid);
+      border-color: var(--primary-medium);
+    }
+  }
+}
+
+// Stage 2 & 3: Bulk Selection Controls Bar
+.bulk-select-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  background-color: var(--secondary);
+  border: 1px solid var(--primary-low);
+  border-radius: 0.5rem;
+  gap: 1rem;
+
+  .bulk-controls-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .bulk-controls-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .selection-count {
+    font-size: var(--font-down-1);
+    color: var(--primary-medium);
+    font-weight: 500;
+  }
+
+  .btn-select-all,
+  .btn-clear-all {
+    padding: 0.5rem 0.875rem;
+    font-size: var(--font-down-1);
+    border-radius: 0.375rem;
+    border: 1px solid var(--primary-low-mid);
+    background-color: var(--primary-very-low);
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.2s;
+
+    &:hover {
+      background-color: var(--primary-low);
+      border-color: var(--primary-medium);
+    }
+  }
+
+  // Mobile responsive
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: stretch;
+
+    .bulk-controls-left,
+    .bulk-controls-right {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+// Bulk Actions Dropdown
+.bulk-actions-dropdown {
+  position: relative;
+
+  summary {
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: var(--tertiary-low);
+    color: var(--tertiary);
+    border: 1px solid var(--tertiary);
+    cursor: pointer;
+    font-size: var(--font-down-1);
+    font-weight: 600;
+    transition: all 0.2s;
+
+    .d-icon {
+      font-size: 0.875rem;
+    }
+
+    &:hover {
+      background-color: var(--tertiary);
+      color: var(--secondary);
+    }
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .bulk-actions-menu {
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0;
+    min-width: 200px;
+    background-color: var(--secondary);
+    border: 1px solid var(--primary-low);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    list-style: none;
+    margin: 0;
+    padding: 0.5rem 0;
+    z-index: 100;
+
+    li {
+      margin: 0;
+      padding: 0;
+
+      button {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 1rem;
+        background: none;
+        border: none;
+        text-align: left;
+        cursor: pointer;
+        color: var(--primary);
+        font-size: var(--font-0);
+        transition: background-color 0.15s;
+
+        .d-icon {
+          font-size: 1rem;
+          color: var(--primary-medium);
+        }
+
+        &:hover {
+          background-color: var(--primary-very-low);
+
+          .d-icon {
+            color: var(--tertiary);
+          }
+        }
+      }
+    }
+  }
+}
+
+// Checkbox Styles
+.card-select-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  z-index: 10;
+  accent-color: var(--tertiary);
+  pointer-events: auto;
+}
+
+// Card in Bulk Mode
+.following-card.bulk-mode {
+  cursor: default;
+}
+
+// Selected Card Styles (Minimal)
+.following-card.selected {
+  border-color: var(--primary-medium);
+}

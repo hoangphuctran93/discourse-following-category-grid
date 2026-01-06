@@ -13,3 +13,13 @@ voted_button_text:
   default: "Đang theo dõi"
   description: "text_for_voted_state"
   type: string
+
+enable_bulk_select:
+  default: true
+  description: "Enable bulk selection of topics in grid view"
+  type: bool
+
+bulk_select_max_items:
+  default: 0
+  description: "Maximum number of items that can be selected at once (0 = unlimited)"
+  type: integer

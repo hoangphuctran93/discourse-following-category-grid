@@ -1,60 +1,119 @@
-<div class="following-grid-container">
-  {{#each this.gridItems as |item|}}
-  <div class="following-card-wrapper">
-    <div class="following-card clickable-card" role="button" {{on "click" (fn this.visit item)}}>
-      <!-- Bulk Select Checkbox -->
+<div class="following-grid-wrapper">
+  {{! Bulk Select Controls }}
+  {{#if this.bulkSelectEnabled}}
+  {{#unless this.bulkSelectMode}}
+  {{! Stage 1: Bulk Select Toggle Button }}
+  <div class="bulk-select-header">
+    <button class="btn-bulk-select-toggle btn-default" {{on "click" this.toggleBulkSelectMode}}>
+      {{d-icon "tasks"}}
+      <span>Bulk select</span>
+    </button>
+  </div>
+  {{else}}
+  {{! Stage 2 & 3: Bulk Selection Controls }}
+  <div class="bulk-select-controls">
+    <div class="bulk-controls-left">
+      {{#if this.hasSelection}}
+      {{! Bulk Actions Dropdown }}
+      <details class="bulk-actions-dropdown">
+        <summary class="btn-bulk-actions btn-default">
+          {{d-icon "wrench"}}
+          <span>Bulk Actions</span>
+          {{d-icon "angle-down"}}
+        </summary>
+        <ul class="bulk-actions-menu">
+          <li>
+            <button {{on "click" this.bulkFollow}}>
+              {{d-icon "user-plus"}}
+              <span>Follow All Selected</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkUnfollow}}>
+              {{d-icon "user-times"}}
+              <span>Unfollow All Selected</span>
+            </button>
+          </li>
+        </ul>
+      </details>
+      <span class="selection-count">{{this.selectedCount}} selected</span>
+      {{/if}}
+    </div>
+    <div class="bulk-controls-right">
+      <button class="btn-select-all btn-default" {{on "click" this.selectAll}}>
+        Select All
+      </button>
+      <button class="btn-clear-all btn-default" {{on "click" this.clearAll}}>
+        Clear All
+      </button>
+    </div>
+  </div>
+  {{/unless}}
+  {{/if}}
 
+  {{! Grid Container }}
+  <div class="following-grid-container">
+    {{#each this.gridItems as |item|}}
+    <div class="following-card-wrapper">
+      <div class="following-card {{if item.isSelected 'selected'}} {{if this.bulkSelectMode 'bulk-mode'}}" role="button"
+        {{on "click" (fn this.visit item)}}>
+        {{! Bulk Select Checkbox - Top Left }}
+        {{#if item.showCheckbox}}
+        <input type="checkbox" class="card-select-checkbox" checked={{item.isSelected}} {{on "click" (fn
+          this.toggleItemSelection item.id)}} />
+        {{/if}}
 
-      <!-- Dynamic Gradient Header -->
-      <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
+        {{! Dynamic Gradient Header }}
+        <div class="card-gradient-header" style={{html-safe (concat "background: " item.gradientStyle)}}></div>
 
-      <div class="card-content">
-        <!-- Thumbnail (was Avatar) -->
-        <div class="card-thumbnail-container">
-          <img alt={{item.title}} class="card-thumbnail" src={{item.thumbnailUrl}} />
+        <div class="card-content">
+          {{! Thumbnail (was Avatar) }}
+          <div class="card-thumbnail-container">
+            <img alt={{item.title}} class="card-thumbnail" src={{item.thumbnailUrl}} />
+          </div>
+
+          {{! Name }}
+          <h2 class="card-name">
+            {{item.displayName}}
+          </h2>
+
+          {{! Badge/Tag }}
+          {{! Tags List with Drag-to-Scroll }}
+          <div class="card-tags-list" {{on "mousedown" this.onTagsMouseDown}} {{on "mouseleave" this.onTagsMouseLeave}}
+            {{on "mouseup" this.onTagsMouseUp}} {{on "mousemove" this.onTagsMouseMove}} {{on "click" this.onTagsClick}}>
+            {{#each item.tags as |tag|}}
+            <span class="card-tag" role="button" data-url={{tag.url}}>{{tag.name}}</span>
+            {{/each}}
+          </div>
+
+          {{! Description/Excerpt }}
+          <p class="card-description">
+            {{item.displayDescription}}
+          </p>
         </div>
 
-        <!-- Name -->
-        <h2 class="card-name">
-          {{item.displayName}}
-        </h2>
+        {{! Footer / Actions }}
+        <div class="card-footer">
+          {{! Vote Action Button (Left) }}
+          <button class="btn-vote-action {{if item.topic.user_voted 'voted'}}" {{on "click" (fn this.toggleVote item)}}
+            title={{if item.topic.user_voted item.votedBtnText item.voteBtnText }}>
+            {{#if item.topic.user_voted}}
+            {{d-icon "check"}}
+            <span>{{item.votedBtnText}}</span>
+            {{else}}
+            {{d-icon "user-plus"}}
+            <span>{{item.voteBtnText}}</span>
+            {{/if}}
+          </button>
 
-        <!-- Badge/Tag -->
-        <!-- Tags List with Drag-to-Scroll -->
-        <div class="card-tags-list" {{on "mousedown" this.onTagsMouseDown}} {{on "mouseleave" this.onTagsMouseLeave}}
-          {{on "mouseup" this.onTagsMouseUp}} {{on "mousemove" this.onTagsMouseMove}} {{on "click" this.onTagsClick}}>
-          {{#each item.tags as |tag|}}
-          <span class="card-tag" role="button" data-url={{tag.url}}>{{tag.name}}</span>
-          {{/each}}
-        </div>
-
-        <!-- Description/Excerpt -->
-        <p class="card-description">
-          {{item.displayDescription}}
-        </p>
-      </div>
-
-      <!-- Footer / Actions -->
-      <div class="card-footer">
-        <!-- Vote Action Button (Left) -->
-        <button class="btn-vote-action {{if item.topic.user_voted 'voted'}}" {{on "click" (fn this.toggleVote item)}}
-          title={{if item.topic.user_voted item.votedBtnText item.voteBtnText }}>
-          {{#if item.topic.user_voted}}
-          {{d-icon "check"}}
-          <span>{{item.votedBtnText}}</span>
-          {{else}}
-          {{d-icon "user-plus"}}
-          <span>{{item.voteBtnText}}</span>
-          {{/if}}
-        </button>
-
-        <!-- Vote Count Display (Right) -->
-        <div class="vote-count-display" title="Total Votes">
-          {{d-icon "arrow-up"}}
-          <span class="count">{{item.topic.vote_count}}</span>
+          {{! Vote Count Display (Right) }}
+          <div class="vote-count-display" title="Total Votes">
+            {{d-icon "arrow-up"}}
+            <span class="count">{{item.topic.vote_count}}</span>
+          </div>
         </div>
       </div>
     </div>
+    {{/each}}
   </div>
-  {{/each}}
 </div>
