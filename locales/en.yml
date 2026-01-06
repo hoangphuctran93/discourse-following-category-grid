@@ -6,3 +6,4 @@ en:
       close_topics: "Close Selected"
       archive_topics: "Archive Selected"
       delete_topics: "Delete Selected"
+      unlist_topics: "Unlist Selected"

@@ -5,45 +5,32 @@
     <div class="bulk-controls-left">
       {{#if this.hasSelection}}
       {{! Bulk Actions Dropdown }}
-      <details class="bulk-actions-dropdown">
-        <summary class="btn-bulk-actions btn-default">
-          {{d-icon "wrench"}}
-          <span>Bulk Actions</span>
-          {{d-icon "angle-down"}}
-        </summary>
-        <ul class="bulk-actions-menu">
-          <li>
-            <button {{on "click" this.bulkFollow}}>
-              {{d-icon "user-plus"}}
-              <span>{{i18n "category_following.bulk_actions.follow_all"}}</span>
-            </button>
-          </li>
-          <li>
-            <button {{on "click" this.bulkUnfollow}}>
-              {{d-icon "user-times"}}
-              <span>{{i18n "category_following.bulk_actions.unfollow_all"}}</span>
-            </button>
-          </li>
-          {{! New Actions }}
-          <li>
-            <button {{on "click" this.bulkClose}}>
-              {{d-icon "lock"}}
-              <span>{{i18n "category_following.bulk_actions.close_topics"}}</span>
-            </button>
-          </li>
-          <li>
-            <button {{on "click" this.bulkArchive}}>
-              {{d-icon "archive"}}
-              <span>{{i18n "category_following.bulk_actions.archive_topics"}}</span>
-            </button>
-          </li>
-          <li>
-            <button {{on "click" this.bulkDelete}} class="btn-danger">
-              {{d-icon "trash-alt"}}
-              <span>{{i18n "category_following.bulk_actions.delete_topics"}}</span>
-            </button>
-          </li>
-        </ul>
+      {{! New Actions }}
+      <li>
+        <button {{on "click" this.bulkClose}}>
+          {{d-icon "lock"}}
+          <span>{{i18n "category_following.bulk_actions.close_topics"}}</span>
+        </button>
+      </li>
+      <li>
+        <button {{on "click" this.bulkArchive}}>
+          {{d-icon "archive"}}
+          <span>{{i18n "category_following.bulk_actions.archive_topics"}}</span>
+        </button>
+      </li>
+      <li>
+        <button {{on "click" this.bulkUnlist}}>
+          {{d-icon "eye-slash"}}
+          <span>{{i18n "category_following.bulk_actions.unlist_topics"}}</span>
+        </button>
+      </li>
+      <li>
+        <button {{on "click" this.bulkDelete}} class="btn-danger">
+          {{d-icon "trash-alt"}}
+          <span>{{i18n "category_following.bulk_actions.delete_topics"}}</span>
+        </button>
+      </li>
+      </ul>
       </details>
       <span class="selection-count">{{this.selectedCount}} selected</span>
       {{/if}}

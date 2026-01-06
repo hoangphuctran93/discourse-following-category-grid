@@ -5,43 +5,45 @@ import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DiscourseURL from "discourse/lib/url";
 import { getOwner } from "@ember/application";
+import { tracked } from '@glimmer/tracking';
 
 export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
 
-  // Use the native discovery service for bulk select state (with controller fallback)
-  get bulkSelectEnabled() {
-    // 1. Try Service (Modern)
-    if (this.discovery && this.discovery.bulkSelectEnabled) {
-      return true;
-    }
+  @tracked isBulkSelectEnabled = false;
+  _pollInterval = null;
 
-    // 2. Try Controllers (The native button often toggles the controller state directly)
-    const owner = getOwner(this);
-    const controllers = [
-      "controller:discovery/category",
-      "controller:discovery/topics",
-      "controller:topic-list"
-    ];
-
-    for (const name of controllers) {
-      try {
-        const controller = owner.lookup(name);
-        if (controller && controller.bulkSelectEnabled) {
-          return true;
-        }
-      } catch (e) {
-        // Ignore lookup errors
-      }
-    }
-
-    return false;
+  constructor() {
+    super(...arguments);
+    this.startStatePolling();
   }
 
-  // Derived from topic.selected property (native)
+  willDestroy() {
+    super.willDestroy(...arguments);
+    if (this._pollInterval) {
+      clearInterval(this._pollInterval);
+    }
+  }
+
+  startStatePolling() {
+    // Check every 500ms for the native bulk select class
+    // This is a robust fallback since direct controller access is flaky in themes
+    this._pollInterval = setInterval(() => {
+      const isEnabled = !!document.querySelector(".topic-list.bulk-select-enabled, body.bulk-select-enabled");
+      if (this.isBulkSelectEnabled !== isEnabled) {
+        this.isBulkSelectEnabled = isEnabled;
+      }
+    }, 500);
+  }
+
+  get showCheckboxes() {
+    return this.isBulkSelectEnabled;
+  }
+
   get gridItems() {
     const topics = this.args.topics || [];
+    const settings = this.args.settings || {}; // Ensure settings is available
 
     const gradients = [
       "linear-gradient(to right, #3b82f6, #6366f1)", // blue to indigo
@@ -84,7 +86,7 @@ export default class FollowingGrid extends Component {
         voteBtnText: settings.vote_button_text || "Theo dõi",
         votedBtnText: settings.voted_button_text || "Đang theo dõi",
         isSelected: topic.selected, // Use native selected property
-        showCheckbox: this.bulkSelectEnabled // Show checkbox whenever native bulk mode is on
+        showCheckbox: this.isBulkSelectEnabled // Show checkbox whenever native bulk mode is on
       };
     });
   }
@@ -215,6 +217,11 @@ export default class FollowingGrid extends Component {
     }
     // Refresh or reload
     window.location.reload();
+  }
+
+  @action
+  async bulkUnlist() {
+    await this._performStatusUpdate("visible", false);
   }
 
   // Generic status update (closed, archived, visible, pinned)
