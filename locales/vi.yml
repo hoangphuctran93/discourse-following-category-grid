@@ -1,0 +1,8 @@
+vi:
+  category_following:
+    bulk_actions:
+      follow_all: "Theo dõi bài đã chọn"
+      unfollow_all: "Bỏ theo dõi bài đã chọn"
+      close_topics: "Đóng các bài đã chọn"
+      archive_topics: "Lưu trữ các bài đã chọn"
+      delete_topics: "Xóa các bài đã chọn"

@@ -1,0 +1,8 @@
+en:
+  category_following:
+    bulk_actions:
+      follow_all: "Follow All Selected"
+      unfollow_all: "Unfollow All Selected"
+      close_topics: "Close Selected"
+      archive_topics: "Archive Selected"
+      delete_topics: "Delete Selected"

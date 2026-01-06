@@ -1,16 +1,6 @@
 <div class="following-grid-wrapper">
-  {{! Bulk Select Controls }}
+  {{! Bulk Select Controls - Only show when Native Bulk Mode is active }}
   {{#if this.bulkSelectEnabled}}
-  {{#unless this.bulkSelectMode}}
-  {{! Stage 1: Bulk Select Toggle Button }}
-  <div class="bulk-select-header">
-    <button class="btn-bulk-select-toggle btn-default" {{on "click" this.toggleBulkSelectMode}}>
-      {{d-icon "tasks"}}
-      <span>Bulk select</span>
-    </button>
-  </div>
-  {{else}}
-  {{! Stage 2 & 3: Bulk Selection Controls }}
   <div class="bulk-select-controls">
     <div class="bulk-controls-left">
       {{#if this.hasSelection}}
@@ -25,13 +15,32 @@
           <li>
             <button {{on "click" this.bulkFollow}}>
               {{d-icon "user-plus"}}
-              <span>Follow All Selected</span>
+              <span>{{i18n "category_following.bulk_actions.follow_all"}}</span>
             </button>
           </li>
           <li>
             <button {{on "click" this.bulkUnfollow}}>
               {{d-icon "user-times"}}
-              <span>Unfollow All Selected</span>
+              <span>{{i18n "category_following.bulk_actions.unfollow_all"}}</span>
+            </button>
+          </li>
+          {{! New Actions }}
+          <li>
+            <button {{on "click" this.bulkClose}}>
+              {{d-icon "lock"}}
+              <span>{{i18n "category_following.bulk_actions.close_topics"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkArchive}}>
+              {{d-icon "archive"}}
+              <span>{{i18n "category_following.bulk_actions.archive_topics"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkDelete}} class="btn-danger">
+              {{d-icon "trash-alt"}}
+              <span>{{i18n "category_following.bulk_actions.delete_topics"}}</span>
             </button>
           </li>
         </ul>
@@ -48,19 +57,18 @@
       </button>
     </div>
   </div>
-  {{/unless}}
   {{/if}}
 
   {{! Grid Container }}
   <div class="following-grid-container">
     {{#each this.gridItems as |item|}}
     <div class="following-card-wrapper">
-      <div class="following-card {{if item.isSelected 'selected'}} {{if this.bulkSelectMode 'bulk-mode'}}" role="button"
-        {{on "click" (fn this.visit item)}}>
-        {{! Bulk Select Checkbox - Top Left }}
+      <div class="following-card {{if item.isSelected 'selected'}} {{if this.bulkSelectEnabled 'bulk-mode'}}"
+        role="button" {{on "click" (fn this.visit item)}}>
+        {{! Bulk Select Checkbox - Top Left - Show when Native Mode is Enabled }}
         {{#if item.showCheckbox}}
         <input type="checkbox" class="card-select-checkbox" checked={{item.isSelected}} {{on "click" (fn
-          this.toggleItemSelection item.id)}} />
+          this.toggleSelection item.topic)}} />
         {{/if}}
 
         {{! Dynamic Gradient Header }}

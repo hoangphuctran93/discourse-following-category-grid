@@ -1,18 +1,24 @@
 import Component from "@glimmer/component";
 import { action } from "@ember/object";
-import { tracked } from "@glimmer/tracking";
 import { inject as service } from "@ember/service";
 import { ajax } from "discourse/lib/ajax";
 import { popupAjaxError } from "discourse/lib/ajax-error";
 import DiscourseURL from "discourse/lib/url";
+import { getOwner } from "@ember/application";
 
 export default class FollowingGrid extends Component {
   @service router;
+  @service discovery;
 
-  // Bulk Select State
-  @tracked bulkSelectMode = false;
-  @tracked selectedIds = new Set();
+  // Use the native discovery service for bulk select state
+  get bulkSelectEnabled() {
+    if (this.discovery) {
+      return this.discovery.bulkSelectEnabled;
+    }
+    return false;
+  }
 
+  // Derived from topic.selected property (native)
   get gridItems() {
     const topics = this.args.topics || [];
 
@@ -49,90 +55,73 @@ export default class FollowingGrid extends Component {
         categoryName: topic.category ? topic.category.name : "General",
         thumbnailUrl: thumbnailUrl,
         tags: (topic.tags || []).map(t => ({ name: t, url: `/tag/${t}` })),
-        voteCount: topic.vote_count || 0, // Using vote_count from topic voting plugin
+        voteCount: topic.vote_count || 0,
         userVoted: topic.user_voted || false,
-        url: `/t/${topic.slug}/${topic.id}`, // specific url property
-        topic: topic, // pass native object for actions
+        url: `/t/${topic.slug}/${topic.id}`,
+        topic: topic,
         gradientStyle: gradients[index % gradients.length],
         voteBtnText: settings.vote_button_text || "Theo dõi",
         votedBtnText: settings.voted_button_text || "Đang theo dõi",
-        isSelected: this.selectedIds.has(topic.id), // Selection state
-        showCheckbox: this.bulkSelectMode // Show checkbox only in bulk mode
+        isSelected: topic.selected, // Use native selected property
+        showCheckbox: this.bulkSelectEnabled // Show checkbox whenever native bulk mode is on
       };
     });
   }
 
-  // Computed properties for bulk select
+  get selectedTopics() {
+    return (this.args.topics || []).filter(t => t.selected);
+  }
+
   get hasSelection() {
-    return this.selectedIds.size > 0;
+    return this.selectedTopics.length > 0;
   }
 
   get selectedCount() {
-    return this.selectedIds.size;
-  }
-
-  get allSelected() {
-    const topics = this.args.topics || [];
-    return topics.length > 0 && this.selectedIds.size === topics.length;
-  }
-
-  get bulkSelectEnabled() {
-    return this.args.bulkSelectEnabled !== false; // Default to true
-  }
-
-  // Bulk Select Actions
-  @action
-  toggleBulkSelectMode() {
-    this.bulkSelectMode = !this.bulkSelectMode;
-    if (!this.bulkSelectMode) {
-      // Clear selections when exiting bulk mode
-      this.selectedIds.clear();
-      this.selectedIds = new Set(); // Trigger reactivity
-    }
+    return this.selectedTopics.length;
   }
 
   @action
-  toggleItemSelection(itemId, event) {
+  toggleSelection(topic, event) {
     if (event) {
       event.stopImmediatePropagation();
       event.preventDefault();
     }
-
-    if (this.selectedIds.has(itemId)) {
-      this.selectedIds.delete(itemId);
+    // Toggle native property
+    if (topic.toggleProperty) {
+      topic.toggleProperty("selected");
     } else {
-      this.selectedIds.add(itemId);
+      // Fallback if not an Ember object (unlikely in Discourse)
+      // We use Ember.set if imported, or just direct assignment if POJO (but POJO won't track)
+      // Usually topics are objects.
+      const newVal = !topic.selected;
+      try {
+        topic.set("selected", newVal);
+      } catch (e) {
+        topic.selected = newVal;
+      }
     }
-    // Trigger reactivity by creating new Set
-    this.selectedIds = new Set(this.selectedIds);
+    // Force re-computation if needed, but Glimmer tracks 'topic.selected' if it's a tracked property on the model
   }
 
   @action
   selectAll() {
-    const topics = this.args.topics || [];
-    topics.forEach(topic => {
-      this.selectedIds.add(topic.id);
+    (this.args.topics || []).forEach(t => {
+      if (t.set) t.set("selected", true);
+      else t.selected = true;
     });
-    this.selectedIds = new Set(this.selectedIds);
   }
 
   @action
   clearAll() {
-    this.selectedIds.clear();
-    this.selectedIds = new Set();
-    this.bulkSelectMode = false;
-  }
-
-  @action
-  clearSelection() {
-    this.selectedIds.clear();
-    this.selectedIds = new Set();
+    (this.args.topics || []).forEach(t => {
+      if (t.set) t.set("selected", false);
+      else t.selected = false;
+    });
   }
 
   @action
   visit(item) {
-    // Prevent navigation when in bulk select mode
-    if (this.bulkSelectMode) {
+    if (this.bulkSelectEnabled) {
       return;
     }
     if (item.url) {
@@ -140,78 +129,110 @@ export default class FollowingGrid extends Component {
     }
   }
 
-  // Bulk Actions
+  // --- Bulk Actions ---
+
   @action
   async bulkFollow() {
-    const selectedTopics = this.gridItems.filter(item => this.selectedIds.has(item.id));
-
-    for (const item of selectedTopics) {
-      if (!item.topic.user_voted) {
-        try {
-          await ajax("/voting/vote", {
-            type: "POST",
-            data: { topic_id: item.id }
-          });
-          item.topic.set("user_voted", true);
-          item.topic.set("vote_count", (item.topic.vote_count || 0) + 1);
-        } catch (e) {
-          popupAjaxError(e);
-        }
-      }
-    }
-
-    // Clear selection after bulk action
-    this.clearSelection();
+    await this._performVotingBatch(true);
   }
 
   @action
   async bulkUnfollow() {
-    const selectedTopics = this.gridItems.filter(item => this.selectedIds.has(item.id));
-
-    for (const item of selectedTopics) {
-      if (item.topic.user_voted) {
-        try {
-          await ajax("/voting/unvote", {
-            type: "POST",
-            data: { topic_id: item.id }
-          });
-          item.topic.set("user_voted", false);
-          item.topic.set("vote_count", Math.max(0, (item.topic.vote_count || 0) - 1));
-        } catch (e) {
-          popupAjaxError(e);
-        }
-      }
-    }
-
-    // Clear selection after bulk action
-    this.clearSelection();
+    await this._performVotingBatch(false);
   }
 
-  // Drag to Scroll State
+  async _performVotingBatch(isFollow) {
+    const selected = this.selectedTopics;
+    if (selected.length === 0) return;
+    const endpoint = isFollow ? "/voting/vote" : "/voting/unvote";
+
+    for (const topic of selected) {
+      // Skip if already in desired state
+      if (isFollow && topic.user_voted) continue;
+      if (!isFollow && !topic.user_voted) continue;
+
+      try {
+        await ajax(endpoint, { type: "POST", data: { topic_id: topic.id } });
+        if (topic.set) {
+          topic.set("user_voted", isFollow);
+          const current = topic.get("vote_count") || 0;
+          topic.set("vote_count", isFollow ? current + 1 : Math.max(0, current - 1));
+        }
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+    this.clearAll();
+  }
+
+  @action
+  async bulkArchive() {
+    await this._performStatusUpdate("archived", true);
+  }
+
+  @action
+  async bulkClose() {
+    await this._performStatusUpdate("closed", true);
+  }
+
+  @action
+  async bulkDelete() {
+    // Delete often requires a DELETE call per topic usually
+    // Endpoint: DELETE /t/:id
+    const selected = this.selectedTopics;
+    if (selected.length === 0) return;
+
+    if (!window.confirm(`Are you sure you want to delete ${selected.length} topics?`)) return;
+
+    for (const topic of selected) {
+      try {
+        await ajax(`/t/${topic.id}`, { type: "DELETE" });
+        // Remove from list? Or just reload?
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+    // Refresh or reload
+    window.location.reload();
+  }
+
+  // Generic status update (closed, archived, visible, pinned)
+  async _performStatusUpdate(status, enabled) {
+    const selected = this.selectedTopics;
+    if (selected.length === 0) return;
+
+    for (const topic of selected) {
+      try {
+        // PUT /t/:id/status
+        // params: status (closed, archived, etc), enabled (true/false)
+        await ajax(`/t/${topic.id}/status`, {
+          type: "PUT",
+          data: { status: status, enabled: enabled }
+        });
+
+        if (topic.set) {
+          topic.set(status, enabled);
+        }
+      } catch (e) {
+        popupAjaxError(e);
+      }
+    }
+    this.clearAll();
+  }
+
+  // --- Drag to Scroll Handler (Unchanged) ---
   isDown = false;
   startX = 0;
   scrollLeft = 0;
   isDragging = false;
 
   @action
-  toggleSelect(event) {
-    if (event) {
-      event.stopImmediatePropagation();
-    }
-  }
-
-  // --- Drag to Scroll Handlers ---
-
-  @action
   onTagsMouseDown(event) {
     const slider = event.currentTarget;
     this.isDown = true;
-    this.isDragging = false; // Reset drag status
+    this.isDragging = false;
     this.startX = event.pageX - slider.offsetLeft;
     this.scrollLeft = slider.scrollLeft;
-
-    // Optional: Add 'active' class for cursor grabbing styling if needed
-    // slider.classList.add('active');
   }
 
   @action
@@ -222,48 +243,36 @@ export default class FollowingGrid extends Component {
   @action
   onTagsMouseUp() {
     this.isDown = false;
-    // Delay resetting isDragging slightly to allow the 'click' event to fire and check it
-    // But usually click fires immediately after mouseup.
-    // We let onTagsClick handle the check.
   }
 
   @action
   onTagsMouseMove(event) {
     if (!this.isDown) return;
-
-    event.preventDefault(); // Stop text selection
+    event.preventDefault();
     const slider = event.currentTarget;
     const x = event.pageX - slider.offsetLeft;
-    const walk = (x - this.startX) * 2; // Scroll-fast multiplier
-
-    // Threshold to consider it a drag
+    const walk = (x - this.startX) * 2;
     if (Math.abs(x - this.startX) > 5) {
       this.isDragging = true;
     }
-
     slider.scrollLeft = this.scrollLeft - walk;
   }
 
   @action
   onTagsClick(event) {
-    // 1. If dragging, STOP everything (no navigation, no bubbling)
     if (this.isDragging) {
       event.stopImmediatePropagation();
       event.preventDefault();
       this.isDragging = false;
       return;
     }
-
-    // 2. If NOT dragging, check if user clicked a specific tag
     const tagElement = event.target.closest('.card-tag');
     if (tagElement && tagElement.dataset.url) {
-      event.stopImmediatePropagation(); // Don't allow bubble to Topic
+      event.stopImmediatePropagation();
       event.preventDefault();
-      DiscourseURL.routeTo(tagElement.dataset.url); // Navigate to Tag
+      DiscourseURL.routeTo(tagElement.dataset.url);
       return;
     }
-
-    // 3. If clicked on empty space in tags list, Let it bubble -> Card Navigation (Topic) logic takes over
   }
 
   @action
@@ -272,38 +281,19 @@ export default class FollowingGrid extends Component {
       event.stopImmediatePropagation();
       event.preventDefault();
     }
-
-    const direction = item.userVoted ? "remove" : "up";
-
     const topic = item.topic;
-    if (topic) {
-      const oldVoteCount = topic.get("vote_count") || 0;
-      const newVoteCount = direction === "up" ? oldVoteCount + 1 : Math.max(0, oldVoteCount - 1);
+    if (!topic) return;
 
-      topic.set("user_voted", direction === "up");
-      topic.set("vote_count", newVoteCount);
-    }
+    const isFollow = !topic.user_voted;
+    const endpoint = isFollow ? "/voting/vote" : "/voting/unvote";
 
     try {
-      if (direction === "up") {
-        await ajax("/voting/vote", {
-          type: "POST",
-          data: { topic_id: item.id }, // Usually doesn't need type if just upvoting
-        });
-      } else {
-        // Unvote Logic
-        await ajax("/voting/unvote", {
-          type: "POST",
-          data: { topic_id: item.id }
-        });
-      }
+      await ajax(endpoint, { type: "POST", data: { topic_id: topic.id } });
+      topic.set("user_voted", isFollow);
+      const current = topic.get("vote_count") || 0;
+      topic.set("vote_count", isFollow ? current + 1 : Math.max(0, current - 1));
     } catch (e) {
       popupAjaxError(e);
-      // Revert if failed
-      if (topic) {
-        topic.set("user_voted", direction !== "up");
-        // Revert count logic... simplified
-      }
     }
   }
 }
