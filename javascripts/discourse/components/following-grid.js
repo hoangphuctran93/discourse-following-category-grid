@@ -9,6 +9,7 @@ import { tracked } from '@glimmer/tracking';
 export default class FollowingGrid extends Component {
   @service router;
   @service discovery;
+  @service appEvents;
   @service dialog;
 
   // --- Complex Actions (Placeholder/Future Integration) ---
