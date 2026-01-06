@@ -6,8 +6,26 @@ export default class FollowingConnector extends Component {
     @service router;
     @service discovery;
 
+    constructor() {
+        super(...arguments);
+        console.error("FollowingConnector: DEBUG ARGS", {
+            argsKeys: Object.keys(this.args),
+            outletArgsKeys: this.args.outletArgs ? Object.keys(this.args.outletArgs) : 'N/A',
+            bulkSelectEnabledInOutletArgs: this.args.outletArgs?.bulkSelectEnabled,
+            bulkSelectEnabledInArgs: this.args.bulkSelectEnabled
+        });
+    }
+
     get bulkSelectEnabled() {
-        return this.discovery.bulkSelectEnabled;
+        // Try all known locations
+        if (this.args.outletArgs?.bulkSelectEnabled !== undefined) {
+            return this.args.outletArgs.bulkSelectEnabled;
+        }
+        if (this.discovery.bulkSelectEnabled !== undefined) {
+            return this.discovery.bulkSelectEnabled;
+        }
+        // Fallback for debugging
+        return false;
     }
 
     get shouldRender() {
