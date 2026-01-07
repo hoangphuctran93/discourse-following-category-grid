@@ -7,6 +7,8 @@ en:
       voted_text_label: "Voted Button Text"
       enable_bulk_label: "Enable Bulk Select"
       max_items_label: "Max Selected Items"
+  js:
+    following_grid:
     title: "Following"
     bulk_select: "Bulk Select"
     cancel_bulk_select: "Cancel Selection"

@@ -7,6 +7,8 @@ vi:
       voted_text_label: "Chữ nút đã bình chọn"
       enable_bulk_label: "Bật chọn hàng loạt"
       max_items_label: "Số mục tối đa"
+  js:
+    following_grid:
     title: "Đang theo dõi"
     bulk_select: "Chọn nhiều"
     cancel_bulk_select: "Hủy chọn"
