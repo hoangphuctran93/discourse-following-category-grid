@@ -270,52 +270,7 @@ export default class FollowingGrid extends Component {
     await this._performBulkOperation("reset_bump_date");
   }
 
-  // --- Complex Actions (Placeholder/Future Integration) ---
-  // --- Complex Actions (Placeholder/Future Integration) ---
-  @action
-  async bulkUpdateCategory() {
-    // eslint-disable-next-line no-console
-    console.log("Debug I18n:", I18n.t("following_grid.bulk_actions.update_category"));
 
-    const bootbox = require("bootbox");
-    bootbox.alert("Complex bulk actions like 'Update Category' require native modal integration which is currently limited in this view.");
-  }
-
-  @action
-  async bulkUpdateNotifications() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Notification Level update is coming soon.");
-  }
-
-  @action
-  async bulkAppendTags() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Append Tags is coming soon.");
-  }
-
-  @action
-  async bulkReplaceTags() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Replace Tags is coming soon.");
-  }
-
-  @action
-  async bulkRemoveTags() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Remove Tags is coming soon.");
-  }
-
-  @action
-  async bulkAssign() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Assign is coming soon.");
-  }
-
-  @action
-  async bulkUnassign() {
-    const bootbox = require("bootbox");
-    bootbox.alert("Bulk Unassign is coming soon.");
-  }
 
   async _performBulkOperation(operationType) {
     const selected = this.selectedTopics;

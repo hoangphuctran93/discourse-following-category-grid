@@ -1,5 +1,6 @@
 en:
-  following_grid:
+  js:
+    following_grid:
     title: "Following"
     bulk_select: "Bulk Select"
     cancel_bulk_select: "Cancel Selection"

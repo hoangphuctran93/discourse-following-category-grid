@@ -1,5 +1,6 @@
 vi:
-  following_grid:
+  js:
+    following_grid:
     title: "Đang theo dõi"
     bulk_select: "Chọn nhiều"
     cancel_bulk_select: "Hủy chọn"
