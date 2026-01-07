@@ -2,24 +2,24 @@ following_grid_category:
   type: list
   list_type: category
   default: ""
-  description: "list_of_category_slugs_or_ids"
+  description: "following_grid.settings.category_description"
 
 vote_button_text:
   default: "Theo dõi"
-  description: "text_for_unvoted_state"
+  description: "following_grid.settings.vote_text_label"
   type: string
 
 voted_button_text:
   default: "Đang theo dõi"
-  description: "text_for_voted_state"
+  description: "following_grid.settings.voted_text_label"
   type: string
 
 enable_bulk_select:
   default: true
-  description: "Enable bulk selection of topics in grid view"
+  description: "following_grid.settings.enable_bulk_label"
   type: bool
 
 bulk_select_max_items:
   default: 0
-  description: "Maximum number of items that can be selected at once (0 = unlimited)"
+  description: "following_grid.settings.max_items_label"
   type: integer

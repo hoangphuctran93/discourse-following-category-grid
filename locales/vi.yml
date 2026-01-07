@@ -1,6 +1,12 @@
 vi:
-  js:
-    following_grid:
+  following_grid:
+    settings:
+      category_label: "Danh mục lưới theo dõi"
+      category_description: "Danh mục để hiển thị ở dạng lưới (slug hoặc ID)."
+      vote_text_label: "Chữ nút bình chọn"
+      voted_text_label: "Chữ nút đã bình chọn"
+      enable_bulk_label: "Bật chọn hàng loạt"
+      max_items_label: "Số mục tối đa"
     title: "Đang theo dõi"
     bulk_select: "Chọn nhiều"
     cancel_bulk_select: "Hủy chọn"

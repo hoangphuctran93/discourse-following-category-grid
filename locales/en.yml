@@ -1,6 +1,12 @@
 en:
-  js:
-    following_grid:
+  following_grid:
+    settings:
+      category_label: "Following Grid Category"
+      category_description: "The category to display in the grid view (slug or ID)."
+      vote_text_label: "Vote Button Text"
+      voted_text_label: "Voted Button Text"
+      enable_bulk_label: "Enable Bulk Select"
+      max_items_label: "Max Selected Items"
     title: "Following"
     bulk_select: "Bulk Select"
     cancel_bulk_select: "Cancel Selection"
