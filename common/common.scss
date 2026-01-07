@@ -408,8 +408,10 @@ body.custom-following-page {
         font-weight: 500;
         transition: background 0.1s;
 
-        background: #e0f2fe; // Light blue 100
-        color: var(--primary);
+        &:hover {
+          background: #e0f2fe; // Light blue 100
+          color: var(--primary);
+        }
       }
 
       .d-icon {

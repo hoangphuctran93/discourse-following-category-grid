@@ -32,3 +32,8 @@ en:
         replace_tags: "Replace Tags"
         remove_tags: "Remove Tags"
         relist_topics: "Relist"
+vi:
+  js:
+    following_grid:
+      bulk_actions:
+        update_notifications: "Cập nhật thông báo"
