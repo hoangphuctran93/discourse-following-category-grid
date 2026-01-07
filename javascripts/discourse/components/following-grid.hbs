@@ -8,6 +8,22 @@
       <details class="bulk-actions-dropdown">
         <summary>{{d-icon "wrench"}}</summary>
         <ul class="bulk-actions-menu">
+          {{! Actions }}
+          <li>
+            <button {{on "click" this.bulkFollow}}>
+              {{d-icon "user-plus"}}
+              <span>{{i18n "following_grid.bulk_actions.follow_all"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkUnfollow}}>
+              {{d-icon "user-times"}}
+              <span>{{i18n "following_grid.bulk_actions.unfollow_all"}}</span>
+            </button>
+          </li>
+
+          <li class="divider"></li>
+
           {{! Manage Actions }}
           <li>
             <button {{on "click" this.bulkUpdateCategory}}>
@@ -25,6 +41,22 @@
             <button {{on "click" this.bulkResetBumpDate}}>
               {{d-icon "anchor"}}
               <span>{{i18n "following_grid.bulk_actions.reset_bump_date"}}</span>
+            </button>
+          </li>
+
+          <li class="divider"></li>
+
+          {{! Assignment }}
+          <li>
+            <button {{on "click" this.bulkAssign}}>
+              {{d-icon "user-plus"}}
+              <span>{{i18n "following_grid.bulk_actions.assign_topics"}}</span>
+            </button>
+          </li>
+          <li>
+            <button {{on "click" this.bulkUnassign}}>
+              {{d-icon "user-times"}}
+              <span>{{i18n "following_grid.bulk_actions.unassign_topics"}}</span>
             </button>
           </li>
 
