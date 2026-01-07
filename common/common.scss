@@ -409,7 +409,7 @@ body.custom-following-page {
         transition: background 0.1s;
 
         &:hover {
-          background: var(--primary-very-low);
+          background: #dbeafe; // Light blue (Tailwind blue-100 equivalent)
           color: var(--primary);
         }
 
@@ -427,7 +427,7 @@ body.custom-following-page {
           }
 
           &:hover {
-            background: var(--danger-low);
+            background: #ffe4e6; // Light red (Tailwind red-100 equivalent)
           }
         }
       }
