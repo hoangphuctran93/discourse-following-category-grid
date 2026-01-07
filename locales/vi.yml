@@ -31,6 +31,4 @@ vi:
         append_tags: "Thêm thẻ"
         replace_tags: "Thay thế thẻ"
         remove_tags: "Xóa thẻ"
-        assign_topics: "Giao việc"
-        unassign_topics: "Bỏ giao việc"
         relist_topics: "Hiện lại"

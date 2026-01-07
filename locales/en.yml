@@ -31,6 +31,4 @@ en:
         append_tags: "Append Tags"
         replace_tags: "Replace Tags"
         remove_tags: "Remove Tags"
-        assign_topics: "Assign Topics"
-        unassign_topics: "Unassign Topics"
         relist_topics: "Relist"

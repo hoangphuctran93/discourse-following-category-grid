@@ -408,31 +408,30 @@ body.custom-following-page {
         font-weight: 500;
         transition: background 0.1s;
 
-        &:hover {
-          background: #dbeafe; // Light blue (Tailwind blue-100 equivalent)
-          color: var(--primary);
-        }
+        background: #e0f2fe; // Light blue 100
+        color: var(--primary);
+      }
+
+      .d-icon {
+        color: var(--primary-medium);
+        width: 1em;
+        text-align: center;
+      }
+
+      &.btn-danger {
+        color: var(--danger);
 
         .d-icon {
-          color: var(--primary-medium);
-          width: 1em;
-          text-align: center;
+          color: var(--danger);
         }
 
-        &.btn-danger {
-          color: var(--danger);
-
-          .d-icon {
-            color: var(--danger);
-          }
-
-          &:hover {
-            background: #ffe4e6; // Light red (Tailwind red-100 equivalent)
-          }
+        &:hover {
+          background: #fee2e2; // Light red 100
         }
       }
     }
   }
+}
 }
 
 @keyframes fadeIn {

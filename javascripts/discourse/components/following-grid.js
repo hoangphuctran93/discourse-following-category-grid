@@ -38,16 +38,6 @@ export default class FollowingGrid extends Component {
     this.dialog.alert("Bulk Remove Tags is coming soon.");
   }
 
-  @action
-  async bulkAssign() {
-    this.dialog.alert("Bulk Assign is coming soon.");
-  }
-
-  @action
-  async bulkUnassign() {
-    this.dialog.alert("Bulk Unassign is coming soon.");
-  }
-
   @tracked selectionVersion = 0;
   @tracked _bulkSelectEnabled = false;
 

@@ -48,22 +48,6 @@
 
           <li class="divider"></li>
 
-          {{! Assignment }}
-          <li>
-            <button {{on "click" this.bulkAssign}}>
-              {{d-icon "user-plus"}}
-              <span>{{theme-i18n "following_grid.bulk_actions.assign_topics"}}</span>
-            </button>
-          </li>
-          <li>
-            <button {{on "click" this.bulkUnassign}}>
-              {{d-icon "user-times"}}
-              <span>{{theme-i18n "following_grid.bulk_actions.unassign_topics"}}</span>
-            </button>
-          </li>
-
-          <li class="divider"></li>
-
           {{! State Actions }}
           <li>
             <button {{on "click" this.bulkClose}}>
