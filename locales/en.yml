@@ -1,8 +1,8 @@
 en:
   following_grid:
     settings:
-      category_label: "Following Grid Category"
-      category_description: "The category to display in the grid view (slug or ID)."
+      category_label: "Category"
+      category_description: "Select the category to display (slug or ID)."
       vote_text_label: "Vote Button Text"
       voted_text_label: "Voted Button Text"
       enable_bulk_label: "Enable Bulk Select"
@@ -32,8 +32,3 @@ en:
         replace_tags: "Replace Tags"
         remove_tags: "Remove Tags"
         relist_topics: "Relist"
-vi:
-  js:
-    following_grid:
-      bulk_actions:
-        update_notifications: "Cập nhật thông báo"

@@ -412,28 +412,27 @@ body.custom-following-page {
           background: #e0f2fe; // Light blue 100
           color: var(--primary);
         }
-      }
-
-      .d-icon {
-        color: var(--primary-medium);
-        width: 1em;
-        text-align: center;
-      }
-
-      &.btn-danger {
-        color: var(--danger);
 
         .d-icon {
-          color: var(--danger);
+          color: var(--primary-medium);
+          width: 1em;
+          text-align: center;
         }
 
-        &:hover {
-          background: #fee2e2; // Light red 100
+        &.btn-danger {
+          color: var(--danger);
+
+          .d-icon {
+            color: var(--danger);
+          }
+
+          &:hover {
+            background: #fee2e2; // Light red 100
+          }
         }
       }
     }
   }
-}
 }
 
 @keyframes fadeIn {
